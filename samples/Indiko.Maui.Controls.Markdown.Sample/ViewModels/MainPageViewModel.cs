@@ -31,21 +31,22 @@ Move now from ~~xamarin~~ to maui.net !
 ## Single Codebase, Multiple Platforms
 With .NET MAUI, you can target for instance
 
-- Android 
+*WOW: I am running on dotnet 8! Thanks cursor (and gemini!)*
+
+- Android: This significantly reduces development time and effort, allowing developers to focus on building great features rather than dealing with platform-specific code.
 - iOS 
-- macOS 
+- macOS It is a long established fact that a reader will be distracted by the readable content of a page when looking at its layout. The point of using Lorem Ipsum is that it has a more-or-less normal distribution of letters, as opposed to using 'Content here, content here', making it look like readable English. Many desktop publishing packages and web page editors now use Lorem Ipsum as their default model text, and a search for 'lorem ipsum' will unco
 - Windows
 
 with the **same code**.
 
 **Why you should learn mobile cross-platform**
-1. **Broader Market Reach**
+1. **Broader Market Reach** It is a long established fact that a reader will be distracted by the readable content of a page when looking at its layout. The point of using Lorem Ipsum is that it has a more-or-less normal distribution of letters, as opposed to using 'Content here, content here', making it look like readable English. Many desktop publishing packages and web page editors now use Lorem Ipsum as their default model text, and a search for 'lorem ipsum' will unco
 2. **Cost and Time Efficiency**
 3. **Consistent User Experience**
 
 This significantly reduces development time and effort, allowing developers to focus on building great features rather than dealing with platform-specific code.
 
-![Maui Bot](dev.png)
 
 ## Modern UI Development
 
@@ -125,7 +126,7 @@ $$
 $$
 
 ### Lokal SVG Image
-![Lokal SVG ](dotnet_bot)
+![Lokal SVG ](dotnet_bot.svg)
 
 ### Web Source SVG Image
 ![Web Source SVG](https://www.svgrepo.com/show/530402/honor.svg)
