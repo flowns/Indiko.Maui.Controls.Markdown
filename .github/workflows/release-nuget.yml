@@ -52,7 +52,7 @@ jobs:
         run: dotnet workload install maui-tizen
       
       - name: Install MAUI workloads
-        run: dotnet workload restore
+        run: dotnet workload restore src/Indiko.Maui.Controls.Markdown/Indiko.Maui.Controls.Markdown.csproj
 
       - name: Restore dependencies
         run: dotnet restore src/Indiko.Maui.Controls.Markdown/Indiko.Maui.Controls.Markdown.csproj
