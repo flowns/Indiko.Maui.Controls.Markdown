@@ -9,7 +9,7 @@ on:
 
 jobs:
   build-and-publish:
-    runs-on: ubuntu-latest
+    runs-on: macos-latest
     permissions:
       id-token: write # Required for OIDC
       contents: read
@@ -48,9 +48,6 @@ jobs:
           role-to-assume: ${{ secrets.AWS_ROLE_TO_ASSUME }}
           aws-region: 'eu-north-1'
 
-      - name: Install MAUI workloads
-        run: dotnet workload install maui-tizen
-      
       - name: Install MAUI workloads
         run: dotnet workload restore src/Indiko.Maui.Controls.Markdown/Indiko.Maui.Controls.Markdown.csproj
 
