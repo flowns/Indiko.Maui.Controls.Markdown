@@ -52,15 +52,15 @@ jobs:
         run: dotnet workload restore
 
       - name: Restore dependencies
-        run: dotnet restore src/Indiko.Maui.Controls.Markdown
+        run: dotnet restore src/Indiko.Maui.Controls.Markdown/Indiko.Maui.Controls.Markdown.csproj
 
       - name: Pack project
         run: |
           if [[ "${{ github.event_name }}" == "workflow_dispatch" ]]; then
-            dotnet pack src/Indiko.Maui.Controls.Markdown -c Release -p:PackageVersion=${{ env.latest_tag }} --output ./packages
+            dotnet pack src/Indiko.Maui.Controls.Markdown/Indiko.Maui.Controls.Markdown.csproj -c Release -p:PackageVersion=${{ env.latest_tag }} --output ./packages
           else
             version_without_v=${{ steps.get_version_from_push.outputs.version-without-v }}
-            dotnet pack src/Indiko.Maui.Controls.Markdown -c Release -p:PackageVersion=$version_without_v --output ./packages
+            dotnet pack src/Indiko.Maui.Controls.Markdown/Indiko.Maui.Controls.Markdown.csproj -c Release -p:PackageVersion=$version_without_v --output ./packages
           fi
         shell: bash
  
