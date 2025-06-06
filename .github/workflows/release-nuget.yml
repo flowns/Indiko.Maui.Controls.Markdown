@@ -68,6 +68,7 @@ jobs:
         id: codeartifact_token
         run: |
           echo "token=$(aws codeartifact get-authorization-token --domain flowns --domain-owner 949880251768 --query authorizationToken --output text)" >> $GITHUB_ENV
+          echo "token=$token"
 
       - name: Push to AWS CodeArtifact
         run: |
