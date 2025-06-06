@@ -32,7 +32,7 @@ jobs:
           echo "AWS_SECRET_ACCESS_KEY=${{ secrets.AWS_SECRET_KEY }}" >> $GITHUB_ENV 
           echo "AWS_REGION=eu-north-1" >> $GITHUB_ENV
           echo "token=$(aws codeartifact get-authorization-token --domain flowns --domain-owner 949880251768 --query authorizationToken --output text --region=eu-north-1)" >> $GITHUB_ENV
-          echo "$GITHUB_ENV"
+          aws codeartifact get-authorization-token --domain flowns --domain-owner 949880251768 --query authorizationToken --output text --region=eu-north-1
 
       - name: Fetch all tags
         run: |
