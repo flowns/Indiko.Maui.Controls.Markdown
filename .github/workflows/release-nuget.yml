@@ -48,13 +48,7 @@ jobs:
           role-to-assume: ${{ secrets.AWS_ROLE_TO_ASSUME }}
           aws-region: 'eu-north-1'
 
-      # - name: Install MAUI workloads
-      #   run: dotnet workload restore
-
-      - name: Install MAUI
-        run: dotnet tool install -g dotnet-maui
-
-      - name: Install MAUI-tizen
+      - name: Install MAUI workloads
         run: dotnet workload install maui-tizen
 
       - name: Restore dependencies
