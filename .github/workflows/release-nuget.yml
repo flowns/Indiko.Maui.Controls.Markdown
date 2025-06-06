@@ -17,7 +17,23 @@ jobs:
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
+
+      - name: Configure AWS Credentials
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_KEY }}
+          aws-region: 'eu-north-1'
       
+      - name: Get CodeArtifact Authorization Token
+        id: codeartifact_token
+        run: |
+          echo "AWS_ACCESS_KEY_ID=${{ secrets.AWS_ACCESS_KEY }}" >> $GITHUB_ENV
+          echo "AWS_SECRET_ACCESS_KEY=${{ secrets.AWS_SECRET_KEY }}" >> $GITHUB_ENV 
+          echo "AWS_REGION=eu-north-1" >> $GITHUB_ENV
+          echo "token=$(aws codeartifact get-authorization-token --domain flowns --domain-owner 949880251768 --query authorizationToken --output text)" >> $GITHUB_ENV
+          echo "$GITHUB_ENV"
+
       - name: Fetch all tags
         run: |
           git fetch --tags
@@ -42,13 +58,6 @@ jobs:
         with:
           dotnet-version: '8.0.x' # Specify your .NET version
 
-      - name: Configure AWS Credentials
-        uses: aws-actions/configure-aws-credentials@v4
-        with:
-          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY }}
-          aws-secret-access-key: ${{ secrets.AWS_SECRET_KEY }}
-          aws-region: 'eu-north-1'
-
       - name: Install MAUI workloads
         run: dotnet workload restore src/Indiko.Maui.Controls.Markdown/Indiko.Maui.Controls.Markdown.csproj
 
@@ -65,14 +74,7 @@ jobs:
           fi
         shell: bash
  
-      - name: Get CodeArtifact Authorization Token
-        id: codeartifact_token
-        run: |
-          echo "AWS_ACCESS_KEY_ID=${{ secrets.AWS_ACCESS_KEY }}" >> $GITHUB_ENV
-          echo "AWS_SECRET_ACCESS_KEY=${{ secrets.AWS_SECRET_KEY }}" >> $GITHUB_ENV 
-          echo "AWS_REGION=eu-north-1" >> $GITHUB_ENV
-          echo "token=$(aws codeartifact get-authorization-token --domain flowns --domain-owner 949880251768 --query authorizationToken --output text)" >> $GITHUB_ENV
-          echo "token=$token"
+
 
       - name: Push to AWS CodeArtifact
         run: |
