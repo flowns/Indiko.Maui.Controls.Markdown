@@ -834,7 +834,7 @@ public sealed class MarkdownView : ContentView
                         }
                         else
                         {
-                            var prefix = listBlock.IsOrdered ? $"{item.Order}." : "•";
+                            var prefix = listBlock.IsOrdered ? $"{item.Order}." : "â€¢";
                             var rowGrid = new Grid
                             {
                                 ColumnDefinitions =
