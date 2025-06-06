@@ -5,6 +5,7 @@ on:
     tags:
       - "[0-9]+.[0-9]+.[0-9]+-dotnet-8"  # Match pre-release tags like 1.0.29-dotnet-8
       - "v[0-9]+.[0-9]+.[0-9]+-dotnet-8" # Match pre-release tags like v1.0.29-dotnet-8
+  workflow_dispatch:    # Allows manual run
 
 jobs:
   build-and-publish:
@@ -16,6 +17,25 @@ jobs:
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
+      
+      - name: Fetch all tags
+        run: |
+          git fetch --tags
+        shell: bash
+
+      - name: Get latest tag (Manual trigger)
+        if: github.event_name == 'workflow_dispatch'
+        id: get_latest_tag
+        run: |
+          latest_tag=$(git describe --tags $(git rev-list --tags --max-count=1))
+          latest_tag_without_v=${latest_tag#v}
+          echo "latest_tag=$latest_tag_without_v" >> $GITHUB_ENV
+        shell: bash
+
+      - name: Use the pushed tag (Push trigger)
+        if: github.event_name == 'push'
+        id: get_version_from_push
+        uses: battila7/get-version-action@v2
 
       - name: Setup .NET
         uses: actions/setup-dotnet@v4
@@ -26,19 +46,19 @@ jobs:
         uses: aws-actions/configure-aws-credentials@v4
         with:
           role-to-assume: ${{ secrets.AWS_ROLE_TO_ASSUME }}
-          aws-region: 'YOUR_AWS_REGION' # e.g., us-east-1
+          aws-region: 'eu-north-1'
 
       - name: Restore dependencies
         run: dotnet restore
-      
-      - name: Use the pushed tag (Push trigger)
-        id: get_version_from_push
-        uses: battila7/get-version-action@v2
 
       - name: Pack project
         run: |
+          if [[ "${{ github.event_name }}" == "workflow_dispatch" ]]; then
+            dotnet pack src/Indiko.Maui.Controls.Markdown -c Release -p:PackageVersion=${{ env.latest_tag }} --output ./packages
+          else
             version_without_v=${{ steps.get_version_from_push.outputs.version-without-v }}
-            dotnet pack src/Indiko.Maui.Controls.Markdown -c Release -p:PackageVersion=$version_without_v
+            dotnet pack src/Indiko.Maui.Controls.Markdown -c Release -p:PackageVersion=$version_without_v --output ./packages
+          fi
         shell: bash
  
       - name: Get CodeArtifact Authorization Token
