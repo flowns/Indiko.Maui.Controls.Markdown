@@ -65,8 +65,6 @@ jobs:
           export AWS_SECRET_ACCESS_KEY=${{ secrets.AWS_SECRET_KEY }}
           export AWS_REGION=eu-north-1
           aws codeartifact login --tool dotnet --domain flowns --domain-owner 949880251768 --repository nuget
-          dotnet nuget push ./packages/*.nupkg \
-            --source https://flowns-949880251768.d.codeartifact.eu-north-1.amazonaws.com/nuget/nuget/v3/index.json 
-      
+          dotnet nuget push ./packages/*.nupkg --source flowns/nuget
           
   
