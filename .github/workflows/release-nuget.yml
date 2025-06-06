@@ -32,8 +32,8 @@ jobs:
         run: dotnet restore
       
       - name: Use the pushed tag (Push trigger)
-          id: get_version_from_push
-          uses: battila7/get-version-action@v2
+        id: get_version_from_push
+        uses: battila7/get-version-action@v2
 
       - name: Pack project
         run: |
