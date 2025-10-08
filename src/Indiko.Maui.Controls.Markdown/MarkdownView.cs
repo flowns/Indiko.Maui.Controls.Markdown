@@ -731,7 +731,8 @@ public sealed class MarkdownView : ContentView
                             FontSize = GetFontsizeForBlockLevel(block.Level),
                             FontAttributes = FontAttributes.Bold,
                             TextColor = GetTextColorForBlockLevel(block.Level),
-                            FontFamily = TextFontFace
+                            FontFamily = TextFontFace,
+                            LineHeight = LineHeightMultiplier
                         });
                     }
                     else if (inline is EmphasisInline em)
@@ -743,12 +744,17 @@ public sealed class MarkdownView : ContentView
                             FontSize = GetFontsizeForBlockLevel(block.Level),
                             FontAttributes = em.DelimiterCount == 2 ? FontAttributes.Bold : FontAttributes.Italic,
                             TextColor = GetTextColorForBlockLevel(block.Level),
-                            FontFamily = TextFontFace
+                            FontFamily = TextFontFace,
+                            LineHeight = LineHeightMultiplier
                         });
                     }
                     else if (inline is LineBreakInline)
                     {
-                        formatted.Spans.Add(new Span { Text = "\n" });
+                        formatted.Spans.Add(new Span
+                        {
+                            Text = "\n",
+                            LineHeight = LineHeightMultiplier
+                        });
                     }
                 }
             }
@@ -1187,7 +1193,8 @@ public sealed class MarkdownView : ContentView
                             Text = literal.Content.Text.Substring(literal.Content.Start, literal.Content.Length),
                             FontFamily = TextFontFace,
                             FontSize = TextFontSize,
-                            TextColor = TextColor
+                            TextColor = TextColor,
+                            LineHeight = LineHeightMultiplier
                         });
                         break;
 
@@ -1206,7 +1213,8 @@ public sealed class MarkdownView : ContentView
                                     : FontAttributes.None,
                             FontFamily = TextFontFace,
                             FontSize = TextFontSize,
-                            TextColor = TextColor
+                            TextColor = TextColor,
+                            LineHeight = LineHeightMultiplier
                         });
                         break;
 
@@ -1216,7 +1224,8 @@ public sealed class MarkdownView : ContentView
                             Text = "\n",
                             FontFamily = TextFontFace,
                             FontSize = TextFontSize,
-                            TextColor = TextColor
+                            TextColor = TextColor,
+                            LineHeight = LineHeightMultiplier
                         });
                         break;
 
@@ -1229,6 +1238,7 @@ public sealed class MarkdownView : ContentView
                             TextDecorations = TextDecorations.Underline,
                             FontFamily = TextFontFace,
                             FontSize = TextFontSize,
+                            LineHeight = LineHeightMultiplier
                         };
 
                         var tap = new TapGestureRecognizer();
@@ -1256,7 +1266,8 @@ public sealed class MarkdownView : ContentView
                             Text = "[Image]",
                             FontFamily = TextFontFace,
                             FontSize = TextFontSize,
-                            TextColor = TextColor
+                            TextColor = TextColor,
+                            LineHeight = LineHeightMultiplier
                         });
                         break;
                     case MathInline math:
@@ -1266,7 +1277,8 @@ public sealed class MarkdownView : ContentView
                             FontAttributes = FontAttributes.Italic,
                             TextColor = Colors.DarkOliveGreen,
                             FontFamily = TextFontFace,
-                            FontSize = TextFontSize
+                            FontSize = TextFontSize,
+                            LineHeight = LineHeightMultiplier
                         });
                         break;
                 }
