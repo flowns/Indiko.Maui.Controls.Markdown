@@ -36,6 +36,9 @@
 
 		<!-- Images -->
 		<MauiFont Include="Resources\Fonts\*" />
+		
+		<!-- Also include fonts as bundled resources as a workaround for font in debug on Android -->
+		<BundleResource Include="Resources\Fonts\*" />
 
 		<!-- Embedded Resources (also remove the "Resources\EmbeddedResources" prefix) -->
 		<MauiAsset Include="Resources\Raw\**" LogicalName="%(RecursiveDir)%(Filename)%(Extension)" />

@@ -3,6 +3,26 @@
 namespace Indiko.Maui.Controls.Markdown.Sample;
 public static class MauiProgram
 {
+    public static class FontAlias
+    {
+        public const string BrandonBold = "BrandonBold";
+        public const string BrandonRegular = "BrandonRegular";
+        public const string OpenSansBold = "OpenSansBold";
+        public const string OpenSansItalic = "OpenSansItalic";
+        public const string OpenSansRegular = "OpenSansRegular";
+        public const string OpenSansSemiBold = "OpenSansSemiBold";
+    }
+    
+    public static readonly Dictionary<string, string> FontFiles = new()
+    {
+        { FontAlias.BrandonBold, "neueSerie57-Medium.ttf" },
+        { FontAlias.BrandonRegular, "neueSerie57-Regular.ttf" },
+        { FontAlias.OpenSansBold, "neueSerie57-Medium.ttf" }, 
+        { FontAlias.OpenSansItalic, "neueSerie57-RegularItalic.ttf" },
+        { FontAlias.OpenSansRegular, "neueSerie57-Regular.ttf" },
+        { FontAlias.OpenSansSemiBold, "neueSerie57-Book.ttf" }
+    };
+    
     public static MauiApp CreateMauiApp()
     {
         var builder = MauiApp.CreateBuilder();
@@ -10,16 +30,15 @@ public static class MauiProgram
             .UseMarkdownView()
             .ConfigureFonts(fonts =>
         {
-            fonts.AddFont("OpenSans-Regular.ttf", "OpenSansRegular");
-            fonts.AddFont("OpenSans-Semibold.ttf", "OpenSansSemibold");
-            fonts.AddFont("CamingoCode-Regular.tff", "CamingoCodeRegular");
-            fonts.AddFont("CamingoCode-Italic.tff", "CamingoCodeItalic");
-            fonts.AddFont("CamingoCode-BoldItalic.tff", "CamingoCodeBoldItalic");
-            fonts.AddFont("CamingoCode-Bold.tff", "CamingoCodeBold");
+            fonts.AddFont(FontFiles[FontAlias.BrandonBold], FontAlias.BrandonBold);
+            fonts.AddFont(FontFiles[FontAlias.BrandonRegular], FontAlias.BrandonRegular);
+            fonts.AddFont(FontFiles[FontAlias.OpenSansBold], FontAlias.OpenSansBold);
+            fonts.AddFont(FontFiles[FontAlias.OpenSansItalic], FontAlias.OpenSansItalic);
+            fonts.AddFont(FontFiles[FontAlias.OpenSansRegular], FontAlias.OpenSansRegular);
+            fonts.AddFont(FontFiles[FontAlias.OpenSansSemiBold], FontAlias.OpenSansSemiBold);
         });
 
         builder.Services.AddSingleton<MainPage>();
-        builder.Services.AddSingleton<MainPageViewModel>();
         Routing.RegisterRoute(nameof(MainPage), typeof(MainPage));
 
         return builder.Build();

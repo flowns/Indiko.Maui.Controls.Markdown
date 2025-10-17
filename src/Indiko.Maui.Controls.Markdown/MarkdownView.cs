@@ -1,4 +1,5 @@
 using System.ComponentModel;
+using System.Diagnostics;
 using System.Text;
 using System.Text.RegularExpressions;
 using System.Windows.Input;
@@ -222,6 +223,24 @@ public sealed class MarkdownView : ContentView
         get => (string)GetValue(TextFontFaceProperty);
         set => SetValue(TextFontFaceProperty, value);
     }
+    
+    public static readonly BindableProperty TextFontFaceBoldProperty =
+        BindableProperty.Create(nameof(TextFontFaceBold), typeof(string), typeof(MarkdownView), propertyChanged: OnMarkdownTextChanged);
+
+    public string TextFontFaceBold
+    {
+        get => (string)GetValue(TextFontFaceBoldProperty);
+        set => SetValue(TextFontFaceBoldProperty, value);
+    }
+    
+    public static readonly BindableProperty TextFontFaceItalicProperty =
+        BindableProperty.Create(nameof(TextFontFaceItalic), typeof(string), typeof(MarkdownView), propertyChanged: OnMarkdownTextChanged);
+
+    public string TextFontFaceItalic
+    {
+        get => (string)GetValue(TextFontFaceItalicProperty);
+        set => SetValue(TextFontFaceItalicProperty, value);
+    }
 
     /* ****** Line Block Styling ******** */
 
@@ -302,8 +321,8 @@ public sealed class MarkdownView : ContentView
     }
 
     public static readonly BindableProperty BlockQuoteTextColorProperty =
-      BindableProperty.Create(nameof(BlockQuoteTextColor), typeof(Color), typeof(MarkdownView), Colors.BlueViolet, propertyChanged: OnMarkdownTextChanged);
-
+      BindableProperty.Create(nameof(BlockQuoteTextColor), typeof(Color), typeof(MarkdownView), Colors.Black, propertyChanged: OnMarkdownTextChanged);
+    
     public Color BlockQuoteTextColor
     {
         get => (Color)GetValue(BlockQuoteTextColorProperty);
@@ -317,6 +336,16 @@ public sealed class MarkdownView : ContentView
     {
         get => (string)GetValue(BlockQuoteFontFaceProperty);
         set => SetValue(BlockQuoteFontFaceProperty, value);
+    }
+    
+    public static readonly BindableProperty BlockQuoteFontSizeProperty =
+        BindableProperty.Create(nameof(BlockQuoteFontSize), typeof(double), typeof(MarkdownView), defaultValue: 14d, propertyChanged: OnMarkdownTextChanged);
+
+    [TypeConverter(typeof(FontSizeConverter))]
+    public double BlockQuoteFontSize
+    {
+        get => (double)GetValue(BlockQuoteFontSizeProperty);
+        set => SetValue(BlockQuoteFontSizeProperty, value);
     }
 
     /* ****** Hyplerlink Styling ******** */
@@ -491,7 +520,7 @@ public sealed class MarkdownView : ContentView
                 HeadingBlock h => RenderHeading(h),
                 ListBlock l => RenderList(l),
                 QuoteBlock q => RenderQuote(q),
-                ThematicBreakBlock => new BoxView { HeightRequest = 1, BackgroundColor = LineColor },
+                ThematicBreakBlock => new BoxView { HeightRequest = 1, Color = LineColor, Margin = new Thickness(0, 30, 0, 15)},
                 Table table => RenderTable(table),
                 CustomContainer cc => RenderCustomContainer(cc),
                 MathBlock m => RenderFormula(m),
@@ -617,6 +646,9 @@ public sealed class MarkdownView : ContentView
                     string widthValue = null;
                     string heightValue = null;
                     string aspectValue = null;
+                    string alignmentValue = null;
+                    string topMarginValue = null;
+                    string bottomMarginValue = null;
 
                     if (attrs.Properties != null)
                     {
@@ -634,14 +666,28 @@ public sealed class MarkdownView : ContentView
                             {
                                 aspectValue = prop.Value;
                             }
+                            else if (prop.Key.Equals("alignment", StringComparison.OrdinalIgnoreCase))
+                            {
+                                alignmentValue = prop.Value;
+                            }
+                            else if (prop.Key.Equals("top_margin", StringComparison.OrdinalIgnoreCase))
+                            {
+                                topMarginValue = prop.Value;
+                            }
+                            else if (prop.Key.Equals("bottom_margin", StringComparison.OrdinalIgnoreCase))
+                            {
+                                bottomMarginValue = prop.Value;
+                            }
                         }
                     }
 
-                    // If no width was defined, use fallback based on device width
-                    if (string.IsNullOrEmpty(widthValue))
-                    {
-                        widthValue = ((DeviceDisplay.MainDisplayInfo.Width / DeviceDisplay.MainDisplayInfo.Density) - 20).ToString(); // 20 for padding
-                    }
+                    // The code below made all images fill the entire width and therefore centered on the page. This is
+                    // not always what you want, but we should check if there is any case where it is necessary after all.
+                    // // If no width was defined, use fallback based on device width
+                    // if (string.IsNullOrEmpty(widthValue))
+                    // {
+                    //     widthValue = ((DeviceDisplay.MainDisplayInfo.Width / DeviceDisplay.MainDisplayInfo.Density) - 20).ToString(); // 20 for padding
+                    // }
 
                     if (double.TryParse(widthValue, out var w))
                     {
@@ -662,14 +708,41 @@ public sealed class MarkdownView : ContentView
                     {
                         img.Aspect = parsedAspect;
                     }
+                    
+                    try
+                    {
+                        if (!string.IsNullOrEmpty(alignmentValue))
+                        {
+                            TypeConverter layoutConverter = TypeDescriptor.GetConverter(typeof(LayoutOptions));
+                            LayoutOptions? alignment = (LayoutOptions?)layoutConverter.ConvertFromString(alignmentValue);
+                            img.HorizontalOptions = alignment ?? LayoutOptions.Start;
+                        }
+                        
+                    }
+                    catch (Exception ex)
+                    {
+                        Debug.WriteLine($"Warning: Unexpected value for alignment: '{alignmentValue}'");
+                    }
+                    
+                    if (double.TryParse(topMarginValue, out double topMargin))
+                    {
+                        img.Margin = img.Margin with { Top = topMargin };
+                    }
+                    
+                    if (double.TryParse(bottomMarginValue, out var bottomMargin))
+                    {
+                        img.Margin = img.Margin with { Bottom = bottomMargin };
+                    }
                 }
-                else
-                {
-                    // No attributes found, fallback to dynamic width
-                    double maxWidth = DeviceDisplay.MainDisplayInfo.Width / DeviceDisplay.MainDisplayInfo.Density - 20;
-                    img.MinimumWidthRequest = maxWidth;
-                    img.MaximumWidthRequest = maxWidth;
-                }
+                // The code below made all images fill the entire width and therefore centered on the page. This is
+                // not always what you want, but we should check if there is any case where it is necessary after all. 
+                // else
+                // {
+                //     // No attributes found, fallback to dynamic width
+                //     double maxWidth = DeviceDisplay.MainDisplayInfo.Width / DeviceDisplay.MainDisplayInfo.Density - 20;
+                //     img.MinimumWidthRequest = maxWidth;
+                //     img.MaximumWidthRequest = maxWidth;
+                // }
 
                 // Load the image asynchronously
                 LoadImageAsync(link.Url).ContinueWith(t =>
@@ -731,7 +804,7 @@ public sealed class MarkdownView : ContentView
                             FontSize = GetFontsizeForBlockLevel(block.Level),
                             FontAttributes = FontAttributes.Bold,
                             TextColor = GetTextColorForBlockLevel(block.Level),
-                            FontFamily = TextFontFace,
+                            FontFamily = TextFontFaceBold,
                             LineHeight = LineHeightMultiplier
                         });
                     }
@@ -742,9 +815,8 @@ public sealed class MarkdownView : ContentView
                         {
                             Text = text,
                             FontSize = GetFontsizeForBlockLevel(block.Level),
-                            FontAttributes = em.DelimiterCount == 2 ? FontAttributes.Bold : FontAttributes.Italic,
                             TextColor = GetTextColorForBlockLevel(block.Level),
-                            FontFamily = TextFontFace,
+                            FontFamily = em.DelimiterCount == 2 ? TextFontFaceBold : TextFontFaceItalic,
                             LineHeight = LineHeightMultiplier
                         });
                     }
@@ -821,13 +893,27 @@ public sealed class MarkdownView : ContentView
         {
             var quoteContent = new VerticalStackLayout()
             {
-                Margin = 10
+                Margin = 20,
+                Spacing = (8 * ParagraphSpacing)
             };
+
+            string originalFontFace = TextFontFace;
+            double originalTextFontSize = TextFontSize;
+            Color originalTextColor = TextColor;
+            
+            TextFontFace = BlockQuoteFontFace;
+            TextFontSize = BlockQuoteFontSize;
+            TextColor = BlockQuoteTextColor;
+            
             foreach (var subBlock in block)
             {
                 if (RenderBlock(subBlock) is View view)
                     quoteContent.Children.Add(view);
             }
+
+            TextFontFace = originalFontFace;
+            TextFontSize = originalTextFontSize;
+            TextColor = originalTextColor;
 
             var box = new Border
             {
@@ -845,7 +931,7 @@ public sealed class MarkdownView : ContentView
                 ColumnSpacing = 0,
                 ColumnDefinitions =
                 {
-                    new ColumnDefinition { Width = 5 },
+                    new ColumnDefinition { Width = 0 },
                     new ColumnDefinition { Width = GridLength.Star }
                 }
             };
@@ -860,6 +946,7 @@ public sealed class MarkdownView : ContentView
 
             var blockquote = new Border
             {
+                Margin = new Thickness(0, 20),
                 Padding = new Thickness(0),
                 Stroke = new SolidColorBrush(BlockQuoteBorderColor),
                 StrokeShape = new RoundRectangle().WithCornerRadius(4),
@@ -884,7 +971,6 @@ public sealed class MarkdownView : ContentView
             {
                 BackgroundColor = CodeBlockBackgroundColor,
                 Stroke = new SolidColorBrush(CodeBlockBorderColor),
-                Padding = 8,
                 StrokeShape = new RoundRectangle().WithCornerRadius(4),
                 Content = new Label
                 {
@@ -892,6 +978,7 @@ public sealed class MarkdownView : ContentView
                     FontFamily = CodeBlockFontFace,
                     TextColor = CodeBlockTextColor,
                     FontSize = CodeBlockFontSize,
+                    LineHeight = LineHeightMultiplier,
                     LineBreakMode = LineBreakMode.WordWrap,
                 }
             };
@@ -1142,8 +1229,9 @@ public sealed class MarkdownView : ContentView
                                 {
                                     Text = prefix,
                                     FontAttributes = FontAttributes.Bold,
-                                    VerticalOptions = LayoutOptions.Start,
-                                    HorizontalOptions = LayoutOptions.Start
+                                    VerticalOptions = LayoutOptions.Center,
+                                    HorizontalOptions = LayoutOptions.Start,
+                                    LineHeight = LineHeightMultiplier
                                 };
 
                                 if (content is View contentView)
@@ -1206,12 +1294,11 @@ public sealed class MarkdownView : ContentView
                             TextDecorations = em.DelimiterChar == '~'
                                 ? TextDecorations.Strikethrough
                                 : TextDecorations.None,
-                            FontAttributes = em.DelimiterChar == '*' && em.DelimiterCount == 2
-                                ? FontAttributes.Bold
+                            FontFamily = em.DelimiterChar == '*' && em.DelimiterCount == 2
+                                ? TextFontFaceBold
                                 : em.DelimiterChar == '*' && em.DelimiterCount == 1
-                                    ? FontAttributes.Italic
-                                    : FontAttributes.None,
-                            FontFamily = TextFontFace,
+                                    ? TextFontFaceItalic
+                                    : TextFontFace,
                             FontSize = TextFontSize,
                             TextColor = TextColor,
                             LineHeight = LineHeightMultiplier
