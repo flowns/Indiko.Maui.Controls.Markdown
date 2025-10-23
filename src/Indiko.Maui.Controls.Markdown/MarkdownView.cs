@@ -650,8 +650,6 @@ public sealed class MarkdownView : ContentView
                     string heightValue = null;
                     string aspectValue = null;
                     string alignmentValue = null;
-                    string topMarginValue = null;
-                    string bottomMarginValue = null;
 
                     if (attrs.Properties != null)
                     {
@@ -672,14 +670,6 @@ public sealed class MarkdownView : ContentView
                             else if (prop.Key.Equals("alignment", StringComparison.OrdinalIgnoreCase))
                             {
                                 alignmentValue = prop.Value;
-                            }
-                            else if (prop.Key.Equals("top_margin", StringComparison.OrdinalIgnoreCase))
-                            {
-                                topMarginValue = prop.Value;
-                            }
-                            else if (prop.Key.Equals("bottom_margin", StringComparison.OrdinalIgnoreCase))
-                            {
-                                bottomMarginValue = prop.Value;
                             }
                         }
                     }
@@ -727,15 +717,6 @@ public sealed class MarkdownView : ContentView
                         Debug.WriteLine($"Warning: Unexpected value for alignment: '{alignmentValue}'");
                     }
                     
-                    if (double.TryParse(topMarginValue, out double topMargin))
-                    {
-                        img.Margin = img.Margin with { Top = topMargin };
-                    }
-                    
-                    if (double.TryParse(bottomMarginValue, out var bottomMargin))
-                    {
-                        img.Margin = img.Margin with { Bottom = bottomMargin };
-                    }
                 }
                 // The code below made all images fill the entire width and therefore centered on the page. This is
                 // not always what you want, but we should check if there is any case where it is necessary after all. 
