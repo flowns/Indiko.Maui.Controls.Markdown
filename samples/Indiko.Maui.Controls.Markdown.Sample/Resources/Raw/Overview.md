@@ -39,3 +39,5 @@ Spacers can be used to control the space between elements. The horizontal line a
 ![](https://www.svgrepo.com/show/530402/honor.svg){ alignment=Center width=80 height=80}
 ::spacer -80
 ![](https://www.svgrepo.com/show/530402/honor.svg){ alignment=End width=40 height=40}
+
+::spacer 64

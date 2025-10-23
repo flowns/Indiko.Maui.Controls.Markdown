@@ -34,5 +34,5 @@ Your focus is lower than usual. If this keeps happening, try steps to reduce dis
 ::spacer 32
 
 ```
-**The focus scale is based on PROMIS®, Patient-Reported Outcomes Measurement Information System. Developed and validated with state-of-the-science methods to be psychometrically sound and to transform how life domains are measured.
+*The focus scale is based on PROMIS®, Patient-Reported Outcomes Measurement Information System. Developed and validated with state-of-the-science methods to be psychometrically sound and to transform how life domains are measured.
 ```
