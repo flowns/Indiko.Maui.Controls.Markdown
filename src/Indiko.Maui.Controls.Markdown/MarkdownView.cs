@@ -4,6 +4,7 @@ using System.Text;
 using System.Text.RegularExpressions;
 using System.Windows.Input;
 using System.Xml;
+using Indiko.Maui.Controls.Markdown.Extensions;
 using Markdig;
 using Markdig.Extensions.CustomContainers;
 using Markdig.Extensions.Mathematics;
@@ -477,6 +478,7 @@ public sealed class MarkdownView : ContentView
                 .UseAutoLinks()
                 .UseFooters()
                 .UseMathematics()
+                .Use(new SpacerExtension())
                 .Build();
 
             MarkdownDocument document = Markdig.Markdown.Parse(markdown, pipeline);
@@ -485,7 +487,7 @@ public sealed class MarkdownView : ContentView
             {
                 Margin = 0,
                 Padding = 0,
-                Spacing = (8 * ParagraphSpacing)
+                Spacing = GetSpacing()
             };
 
             foreach (var block in document)
@@ -520,11 +522,12 @@ public sealed class MarkdownView : ContentView
                 HeadingBlock h => RenderHeading(h),
                 ListBlock l => RenderList(l),
                 QuoteBlock q => RenderQuote(q),
-                ThematicBreakBlock => new BoxView { HeightRequest = 1, Color = LineColor, Margin = new Thickness(0, 30, 0, 15)},
+                ThematicBreakBlock => new BoxView { HeightRequest = 1, Color = LineColor, Margin = new Thickness(0, 0, 0, 0)},
                 Table table => RenderTable(table),
                 CustomContainer cc => RenderCustomContainer(cc),
                 MathBlock m => RenderFormula(m),
                 CodeBlock c => c is FencedCodeBlock fenced ? RenderCode(fenced) : RenderCodeBlock(c),
+                SpacerBlock s => RenderSpacer(s),
                 BlankLineBlock => null,
                 _ => null
             };
@@ -893,8 +896,8 @@ public sealed class MarkdownView : ContentView
         {
             var quoteContent = new VerticalStackLayout()
             {
-                Margin = 20,
-                Spacing = (8 * ParagraphSpacing)
+                Margin = 16, // Margin inside block
+                Spacing = GetSpacing()
             };
 
             string originalFontFace = TextFontFace;
@@ -946,7 +949,7 @@ public sealed class MarkdownView : ContentView
 
             var blockquote = new Border
             {
-                Margin = new Thickness(0, 20),
+                Margin = new Thickness(0, 0),
                 Padding = new Thickness(0),
                 Stroke = new SolidColorBrush(BlockQuoteBorderColor),
                 StrokeShape = new RoundRectangle().WithCornerRadius(4),
@@ -998,7 +1001,6 @@ public sealed class MarkdownView : ContentView
             {
                 BackgroundColor = CodeBlockBackgroundColor,
                 Stroke = new SolidColorBrush(CodeBlockBorderColor),
-                Padding = 8,
                 StrokeShape = new RoundRectangle().WithCornerRadius(4),
                 Content = new Label
                 {
@@ -1006,6 +1008,7 @@ public sealed class MarkdownView : ContentView
                     FontFamily = CodeBlockFontFace,
                     TextColor = CodeBlockTextColor,
                     FontSize = CodeBlockFontSize,
+                    LineHeight = LineHeightMultiplier,
                     LineBreakMode = LineBreakMode.WordWrap,
                 }
             };
@@ -1015,6 +1018,20 @@ public sealed class MarkdownView : ContentView
             Console.WriteLine($"Error rendering code block: {ex.Message}");
             return new Label { Text = "[Error rendering code block]" };
         }
+    }
+
+    private View RenderSpacer(SpacerBlock spacerBlock)
+    {
+        // Remove the configured block spacing above and below this spacer. 
+        // This way, a spacer of 0 will actually result in 0 space between the blocks.
+        double extraHeight = spacerBlock.Height - 2 * GetSpacing();
+        
+        return new BoxView
+        {
+            HeightRequest = 0,
+            Margin = new Thickness(0, extraHeight, 0, 0),
+            Color = Colors.Transparent
+        };
     }
 
     private View RenderTable(Table table)
@@ -1504,6 +1521,11 @@ public sealed class MarkdownView : ContentView
         }
 
         return imageSource ?? ImageSource.FromFile("icon.png");
+    }
+
+    private double GetSpacing()
+    {
+        return 8 * ParagraphSpacing;
     }
 
     internal void TriggerHyperLinkClicked(string url)

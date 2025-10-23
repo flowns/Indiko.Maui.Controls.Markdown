@@ -23,23 +23,31 @@ public partial class AppShell : Shell
 				               ## Heading 2
 				               ### Heading 3
 				               
+				               ::spacer 32
 				               > ### BLOC QUOTES
-				               >
+				               > 
 				               > Block quotes can be used for this type of boxes. It can contain any layout element, such as:
 				               > - Bullet
 				               > - Lists
 				               > 
-				               > **Bold** and *italic* text, etc...  
+				               > **Bold** and *italic* text, etc...
+				               ::spacer 32
 
 				               ```
 				               Code blocks can be used to create this type of text. It can only contain text and not layout elements. At least not yet...
 				               ```
+				               
+				               ::spacer 32
 				               ---
-				               You can specify size, alignment and margin for images:
+				               ::spacer 20
 				               
-				               ![](https://www.svgrepo.com/show/530402/honor.svg){ alignment=Start top_margin=0 bottom_margin=10 width=40 height=40}
+				               Spacers can be used to control the space between elements. The horizontal line above has exactly 32px space above it and 20px below it.
 				               
-				               ![](https://www.svgrepo.com/show/530402/honor.svg){ alignment=Center top_margin=-30 bottom_margin=10 width=80 height=80}
+				               You can specify size and alignment for images. Spacers, even negative ones, can be used to control vertical placement.
+				               
+				               ![](https://www.svgrepo.com/show/530402/honor.svg){ alignment=Start width=40 height=40}
+				               ::spacer -40
+				               ![](https://www.svgrepo.com/show/530402/honor.svg){ alignment=Center width=80 height=80}
 				               
 				               """
 			}
@@ -52,29 +60,40 @@ public partial class AppShell : Shell
 			BindingContext = new MainPageViewModel()
 			{
 				MarkdownText = """
+				               # Almost there
+				               ::spacer -4
 				               ## Let’s start with your mood
+				               ::spacer 32
 
 				               The mood scale* scores from 0 to 25 and contains 3 thresholds:
 
-				               ![](https://directus-926401349027.europe-west2.run.app/assets/fdd275cb-97cc-4299-be9e-d8d6fe5494d0.svg){ alignment=Start top_margin=15 bottom_margin=-5 width=65 height=20}
-
+				               ::spacer 32
+				               ![](https://directus-926401349027.europe-west2.run.app/assets/fdd275cb-97cc-4299-be9e-d8d6fe5494d0.svg){ alignment=Start width=65 height=20 }
+				               ::spacer 4
+				               
 				               **Steady and resilient**
 				               You’re feeling positive and emotionally well. Keep doing what works for you.
 
-				               ![](https://directus-926401349027.europe-west2.run.app/assets/c033d14d-d032-4f6c-8711-dbf33b7105e5.svg){ top_margin=15 bottom_margin=-5 width=65 height=20}
-
+				               ::spacer 32
+				               ![](https://directus-926401349027.europe-west2.run.app/assets/c033d14d-d032-4f6c-8711-dbf33b7105e5.svg){ width=65 height=20 }
+				               ::spacer 4
+				               
 				               **Room to lift**
 				               Your mood has room to grow. Small daily changes can help lift it.
 
-				               ![](https://directus-926401349027.europe-west2.run.app/assets/6e0c4653-55f1-4984-a8b8-7f900c8c967d.svg){ top_margin=15 bottom_margin=-5 width=65 height=20}
+				               ::spacer 32
+				               ![](https://directus-926401349027.europe-west2.run.app/assets/6e0c4653-55f1-4984-a8b8-7f900c8c967d.svg){ width=65 height=20 }
+				               ::spacer 4
 
 				               **Running low**
 				               You’re not feeling your best right now. It might help to review your routine and add extra support.
 
 
+				               ::spacer 32
 				               > ### WHY THIS MATTERS
 				               >
 				               > Your mood influences motivation, focus, sleep quality, and overall performance. Tracking it helps you see how your sessions may be helping over time.
+				               ::spacer 32
 
 				               ```
 				               *The mood scale is based on WHO who stands for World Health Organisation.
@@ -94,7 +113,9 @@ public partial class AppShell : Shell
 				               
 				               ## How it affects the brain
 				               
-				               > Because the brain runs on electricity, neurons react to the current. For neurons to be useful to us, they need to shift their electrical charge. 
+				               ::spacer 32
+				               > Because the brain runs on electricity, neurons react to the current. For neurons to be useful to us, they need to shift their electrical charge.
+				               ::spacer 32 
 				               
 				               A neuron receives incoming signals through its dendrites. If the incoming stimulation is strong enough, the neuron is able to pass that signal along. The signal is then transmitted through the entire length of the brain cell in a process called an action potential. Another way to describe it is to say that the neuron “fires”. 
 
