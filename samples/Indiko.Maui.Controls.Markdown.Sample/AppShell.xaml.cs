@@ -18,10 +18,10 @@ public partial class AppShell : Shell
 		{
 			base.OnAppearing();
 		
-			await AddMarkdown("Example", "Example1.md");
-			await AddMarkdown("Assessment", "Assessment.md");
+			await AddMarkdown("Overview", "Overview.md");
+			await AddMarkdown("Assessment 1", "Assessment1.md");
+			await AddMarkdown("Assessment 2", "Assessment2.md");
 			await AddMarkdown("NBA", "NBA.md");
-			await AddMarkdown("More", "OriginalExample.md");
 		}
 		catch (Exception e)
 		{
