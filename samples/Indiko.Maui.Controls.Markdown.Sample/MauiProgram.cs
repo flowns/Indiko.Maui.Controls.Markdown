@@ -15,12 +15,12 @@ public static class MauiProgram
     
     public static readonly Dictionary<string, string> FontFiles = new()
     {
-        { FontAlias.BrandonBold, "neueSerie57-Medium.ttf" },
-        { FontAlias.BrandonRegular, "neueSerie57-Regular.ttf" },
-        { FontAlias.OpenSansBold, "neueSerie57-Medium.ttf" }, 
-        { FontAlias.OpenSansItalic, "neueSerie57-RegularItalic.ttf" },
-        { FontAlias.OpenSansRegular, "neueSerie57-Regular.ttf" },
-        { FontAlias.OpenSansSemiBold, "neueSerie57-Book.ttf" }
+        { FontAlias.BrandonBold, "neueSerie57®-Medium.otf" },
+        { FontAlias.BrandonRegular, "neueSerie57®-Regular.otf" },
+        { FontAlias.OpenSansBold, "neueSerie57®-Medium.otf" },
+        { FontAlias.OpenSansItalic, "neueSerie57®-RegularItalic.otf" },
+        { FontAlias.OpenSansRegular, "neueSerie57®-Regular.otf" },
+        { FontAlias.OpenSansSemiBold, "neueSerie57®-Book.otf" }
     };
     
     public static MauiApp CreateMauiApp()
