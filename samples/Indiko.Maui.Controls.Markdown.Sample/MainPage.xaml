@@ -12,7 +12,7 @@
         <VerticalStackLayout Padding="20" Spacing="10">
 
             <idk:MarkdownView MarkdownText="{Binding MarkdownText}"
-                              BlockQuoteBackgroundColor="#F9F8F5"
+                              BlockQuoteBackgroundColor="#F8F6F1"
                               BlockQuoteBorderColor="{StaticResource White}"
                               BlockQuoteFontFace="OpenSansRegular"
                               BlockQuoteFontSize="14"

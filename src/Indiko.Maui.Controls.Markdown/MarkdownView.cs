@@ -904,7 +904,7 @@ public sealed class MarkdownView : ContentView
                 Margin = new Thickness(0),
                 BackgroundColor = BlockQuoteBorderColor,
                 Stroke = new SolidColorBrush(BlockQuoteBorderColor),
-                StrokeShape = new RoundRectangle() { CornerRadius = new CornerRadius(4, 0, 4, 0) },
+                StrokeShape = new RoundRectangle() { CornerRadius = new CornerRadius(8, 8, 8, 8) },
                 HorizontalOptions = LayoutOptions.Fill,
                 VerticalOptions = LayoutOptions.Fill
             };
@@ -933,7 +933,7 @@ public sealed class MarkdownView : ContentView
                 Margin = new Thickness(0, 0),
                 Padding = new Thickness(0),
                 Stroke = new SolidColorBrush(BlockQuoteBorderColor),
-                StrokeShape = new RoundRectangle().WithCornerRadius(4),
+                StrokeShape = new RoundRectangle().WithCornerRadius(8),
                 BackgroundColor = BlockQuoteBackgroundColor,
                 Content = blockQuoteGrid
             };
