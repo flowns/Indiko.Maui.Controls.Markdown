@@ -1,5 +1,7 @@
-![](https://directus-926401349027.europe-west2.run.app/assets/c4726033-9047-444e-a5e1-2ecb15bdccef.png)
+::spacer -20
+![](https://directus-926401349027.europe-west2.run.app/assets/c4726033-9047-444e-a5e1-2ecb15bdccef.png){ alignment="fullwidth" }
 
+::spacer 16
 ## How it affects the brain
 
 ::spacer 32

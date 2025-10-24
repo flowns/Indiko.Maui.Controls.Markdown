@@ -706,9 +706,16 @@ public sealed class MarkdownView : ContentView
                     {
                         if (!string.IsNullOrEmpty(alignmentValue))
                         {
-                            TypeConverter layoutConverter = TypeDescriptor.GetConverter(typeof(LayoutOptions));
-                            LayoutOptions? alignment = (LayoutOptions?)layoutConverter.ConvertFromString(alignmentValue);
-                            img.HorizontalOptions = alignment ?? LayoutOptions.Start;
+                            if (alignmentValue.Equals("fullwidth", StringComparison.OrdinalIgnoreCase))
+                            {
+                                img.Margin = new Thickness(- Margin.Left - Padding.Left, 0, - Margin.Right - Padding.Right, 0);
+                            }
+                            else
+                            {
+                                TypeConverter layoutConverter = TypeDescriptor.GetConverter(typeof(LayoutOptions));
+                                LayoutOptions? alignment = (LayoutOptions?)layoutConverter.ConvertFromString(alignmentValue);
+                                img.HorizontalOptions = alignment ?? LayoutOptions.Start;    
+                            }
                         }
                         
                     }
