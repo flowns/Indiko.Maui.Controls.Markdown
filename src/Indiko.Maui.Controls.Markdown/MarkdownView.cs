@@ -24,7 +24,7 @@ public sealed class MarkdownView : ContentView
     private static readonly Regex EmailRegex = new Regex(@"\b[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Z|a-z]{2,}\b", RegexOptions.Compiled);
 
     public static readonly BindableProperty MarkdownTextProperty =
-        BindableProperty.Create(nameof(MarkdownText), typeof(string), typeof(MarkdownView), propertyChanged: OnMarkdownTextChanged);
+        BindableProperty.Create(nameof(MarkdownText), typeof(string), typeof(MarkdownView), propertyChanged: OnMarkdownTextContentChanged);
 
     public string MarkdownText
     {
@@ -447,15 +447,14 @@ public sealed class MarkdownView : ContentView
         get => (double)GetValue(LineHeightMultiplierProperty);
         set => SetValue(LineHeightMultiplierProperty, value);
     }
-
-    private static void OnMarkdownTextChanged(BindableObject bindable, object oldValue, object newValue)
+    
+    private static void OnMarkdownTextContentChanged(BindableObject bindable, object oldValue, object newValue)
     {
         if (bindable is MarkdownView view && newValue is string text)
         {
             try
             {
-                string preProcessedText = view.PreProcessMarkdown(text);
-                view.RenderMarkdown(preProcessedText);
+                view.RenderMarkdown(text);
             }
             catch (Exception ex)
             {
@@ -464,22 +463,14 @@ public sealed class MarkdownView : ContentView
         }
     }
 
-    private string PreProcessMarkdown(string markdown)
+    private static void OnMarkdownTextChanged(BindableObject bindable, object oldValue, object newValue)
     {
-        return ReplaceDoubleEmptyLinesWithSectionSpacer(markdown);
-    }
-    
-    private string ReplaceDoubleEmptyLinesWithSectionSpacer(string input)
-    {
-        // Normalize line endings to \n for consistent and safe processing
-        string normalized = Regex.Replace(input, @"\r\n|\r", "\n");
-
-        // Regex pattern to match two or more consecutive empty lines
-        string pattern = @"(\s*?\n){3,}";
-        string sectionSpacer = $"\n::spacer {SectionSpacing}\n";
-
-        // Replace all matches with the section spacer
-        return Regex.Replace(normalized, pattern, sectionSpacer);;
+        // This metohd gets call for every property that is set. In the original code it tried to render all 
+        // properties as markdown. I can't understand why, so I changed it so it only renders if the actual
+        // markdown content was changed. But if that causes problems, uncomment the line below to restore 
+        // the original behaviour:
+        
+        // OnMarkdownTextContentChanged(bindable, oldValue, newValue);
     }
 
     private void RenderMarkdown(string markdown)
@@ -509,7 +500,9 @@ public sealed class MarkdownView : ContentView
                 .Use(new SpacerExtension())
                 .Build();
 
-            MarkdownDocument document = Markdig.Markdown.Parse(markdown, pipeline);
+            string preProcessedMarkdown = PreProcessMarkdown(markdown);
+            MarkdownDocument document = Markdig.Markdown.Parse(preProcessedMarkdown, pipeline);
+            PostProcessMarkdown(document);
 
             var layout = new VerticalStackLayout
             {
@@ -538,6 +531,70 @@ public sealed class MarkdownView : ContentView
             Console.WriteLine($"Error in RenderMarkdown: {ex.Message}");
             Content = new Label { Text = "Error rendering markdown content." };
         }
+    }
+    
+    private string PreProcessMarkdown(string markdown)
+    {
+        return ReplaceDoubleEmptyLinesWithSectionSpacer(markdown);
+    }
+    
+    private string ReplaceDoubleEmptyLinesWithSectionSpacer(string input)
+    {
+        // Normalize line endings to \n for consistent and safe processing
+        string normalized = Regex.Replace(input, @"\r\n|\r", "\n");
+
+        // Regex pattern to match two or more consecutive empty lines
+        string pattern = @"(\s*?\n){3,}";
+        string sectionSpacer = $"\n::spacer {SectionSpacing}\n";
+
+        // Replace all matches with the section spacer
+        return Regex.Replace(normalized, pattern, sectionSpacer);;
+    }
+
+    private void PostProcessMarkdown(MarkdownDocument document)
+    {
+        InsertDefaultSectionBreaks(document);
+    }
+
+    private void InsertDefaultSectionBreaks(MarkdownDocument document)
+    {
+        for (int i = 0; i < document.Count; i++)
+        {
+            Block currentBlock = document[i];
+            Block? previousBlock = i > 0 ? document[i - 1] : null;
+            Block? nextBlock = i < document.Count - 1 ? document[i + 1] : null;
+            int blocksInserted = 0;
+
+            if (ShallHaveSectionBreakBefore(currentBlock) && previousBlock != null && previousBlock is not SpacerBlock)
+            {
+                document.Insert(i, new SpacerBlock{ Height = (int)SectionSpacing });
+                blocksInserted++;
+            }
+            
+            if (ShallHaveSectionBreakAfter(currentBlock) && nextBlock != null && nextBlock is not SpacerBlock)
+            {
+                document.Insert(i + blocksInserted + 1, new SpacerBlock{ Height = (int)SectionSpacing });
+                blocksInserted++;
+            }
+            
+            i += blocksInserted; // Skip the newly inserted blocks
+        }
+    }
+
+    private bool ShallHaveSectionBreakBefore(Block block)
+    {
+        return block is 
+            HeadingBlock { Level: 1 } or 
+            HeadingBlock { Level: 2 } or 
+            QuoteBlock or 
+            CodeBlock;
+    }
+    
+    private bool ShallHaveSectionBreakAfter(Block block)
+    {
+        return block is 
+            QuoteBlock or 
+            CodeBlock;
     }
 
     private View? RenderBlock(Block block)
@@ -1042,12 +1099,22 @@ public sealed class MarkdownView : ContentView
         // This way, a spacer of 0 will actually result in 0 space between the blocks.
         double extraHeight = spacerBlock.Height - 2 * ParagraphSpacing;
         
-        return new BoxView
+        var grid = new Grid
         {
             HeightRequest = 0,
             Margin = new Thickness(0, extraHeight, 0, 0),
-            Color = Colors.Transparent
         };
+        
+        // For visualizing spacers during development:
+        // grid.Add(new Label
+        // {
+        //     Text = $"{spacerBlock.Height}",
+        //     FontSize = 8,
+        //     HeightRequest = 20,
+        //     Margin = new Thickness(-15, -extraHeight + 10, 0, 0),
+        // });
+        
+        return grid;
     }
 
     private View RenderTable(Table table)

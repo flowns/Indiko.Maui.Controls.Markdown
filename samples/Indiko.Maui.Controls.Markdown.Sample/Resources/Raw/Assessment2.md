@@ -26,7 +26,6 @@ You may notice your focus slips at times. Small changes to your routine could he
 **Easily distracted**
 Your focus is lower than usual. If this keeps happening, try steps to reduce distractions and restore mental energy..
 
-
 ::spacer 32
 > ### WHY THIS MATTERS
 >
