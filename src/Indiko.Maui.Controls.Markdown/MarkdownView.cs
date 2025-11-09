@@ -421,12 +421,21 @@ public sealed class MarkdownView : ContentView
     }
 
     public static readonly BindableProperty ParagraphSpacingProperty = BindableProperty.Create(nameof(ParagraphSpacing),
-        typeof(double), typeof(MarkdownView), propertyChanged: OnMarkdownTextChanged, defaultValue: 1.0);
+        typeof(double), typeof(MarkdownView), propertyChanged: OnMarkdownTextChanged, defaultValue: 16d);
 
     public double ParagraphSpacing
     {
         get => (double)GetValue(ParagraphSpacingProperty);
         set => SetValue(ParagraphSpacingProperty, value);
+    }
+    
+    public static readonly BindableProperty SectionSpacingProperty = BindableProperty.Create(nameof(SectionSpacing),
+        typeof(double), typeof(MarkdownView), propertyChanged: OnMarkdownTextChanged, defaultValue: 32d);
+
+    public double SectionSpacing
+    {
+        get => (double)GetValue(SectionSpacingProperty);
+        set => SetValue(SectionSpacingProperty, value);
     }
 
     public static readonly BindableProperty LineHeightMultiplierProperty =
@@ -445,13 +454,32 @@ public sealed class MarkdownView : ContentView
         {
             try
             {
-                view.RenderMarkdown(text);
+                string preProcessedText = view.PreProcessMarkdown(text);
+                view.RenderMarkdown(preProcessedText);
             }
             catch (Exception ex)
             {
                 Console.WriteLine($"Error rendering markdown: {ex.Message}");
             }
         }
+    }
+
+    private string PreProcessMarkdown(string markdown)
+    {
+        return ReplaceDoubleEmptyLinesWithSectionSpacer(markdown);
+    }
+    
+    private string ReplaceDoubleEmptyLinesWithSectionSpacer(string input)
+    {
+        // Normalize line endings to \n for consistent and safe processing
+        string normalized = Regex.Replace(input, @"\r\n|\r", "\n");
+
+        // Regex pattern to match two or more consecutive empty lines
+        string pattern = @"(\s*?\n){3,}";
+        string sectionSpacer = $"\n::spacer {SectionSpacing}\n";
+
+        // Replace all matches with the section spacer
+        return Regex.Replace(normalized, pattern, sectionSpacer);;
     }
 
     private void RenderMarkdown(string markdown)
@@ -487,7 +515,7 @@ public sealed class MarkdownView : ContentView
             {
                 Margin = 0,
                 Padding = 0,
-                Spacing = GetSpacing()
+                Spacing = ParagraphSpacing
             };
 
             foreach (var block in document)
@@ -885,7 +913,7 @@ public sealed class MarkdownView : ContentView
             var quoteContent = new VerticalStackLayout()
             {
                 Margin = 16, // Margin inside block
-                Spacing = GetSpacing()
+                Spacing = ParagraphSpacing
             };
 
             string originalFontFace = TextFontFace;
@@ -1012,7 +1040,7 @@ public sealed class MarkdownView : ContentView
     {
         // Remove the configured block spacing above and below this spacer. 
         // This way, a spacer of 0 will actually result in 0 space between the blocks.
-        double extraHeight = spacerBlock.Height - 2 * GetSpacing();
+        double extraHeight = spacerBlock.Height - 2 * ParagraphSpacing;
         
         return new BoxView
         {
@@ -1187,7 +1215,7 @@ public sealed class MarkdownView : ContentView
             var stack = new VerticalStackLayout
             {
                 Padding = new Thickness(nestingLevel * 20, 0, 0, 0),
-                Spacing = 4
+                Spacing = ParagraphSpacing
             };
 
             foreach (ListItemBlock item in listBlock)
@@ -1311,6 +1339,7 @@ public sealed class MarkdownView : ContentView
                         break;
 
                     case LineBreakInline:
+                        // Note: This causes extra newlines when EnableTrackTrivia() is used.
                         formatted.Spans.Add(new Span
                         {
                             Text = "\n",
@@ -1510,12 +1539,7 @@ public sealed class MarkdownView : ContentView
 
         return imageSource ?? ImageSource.FromFile("icon.png");
     }
-
-    private double GetSpacing()
-    {
-        return 8 * ParagraphSpacing;
-    }
-
+    
     internal void TriggerHyperLinkClicked(string url)
     {
         try

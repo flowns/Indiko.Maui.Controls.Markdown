@@ -22,6 +22,7 @@ public partial class AppShell : Shell
 			await AddMarkdown("Assessment 1", "Assessment1.md");
 			await AddMarkdown("Assessment 2", "Assessment2.md");
 			await AddMarkdown("NBA", "NBA.md");
+			await AddMarkdown("Sections", "SectionsTest.md");
 		}
 		catch (Exception e)
 		{
