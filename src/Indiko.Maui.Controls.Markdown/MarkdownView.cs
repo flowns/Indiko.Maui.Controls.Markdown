@@ -78,6 +78,15 @@ public sealed class MarkdownView : ContentView
         set => SetValue(H1FontSizeProperty, value);
     }
     
+    public static readonly BindableProperty H1SpacingBeforeProperty =
+        BindableProperty.Create(nameof(H1SpacingBefore), typeof(int), typeof(MarkdownView), 16, propertyChanged: OnMarkdownTextChanged);
+
+    public int H1SpacingBefore
+    {
+        get => (int)GetValue(H1SpacingBeforeProperty);
+        set => SetValue(H1SpacingBeforeProperty, value);
+    }
+    
     public static readonly BindableProperty H1SpacingAfterProperty =
         BindableProperty.Create(nameof(H1SpacingAfter), typeof(int), typeof(MarkdownView), -4, propertyChanged: OnMarkdownTextChanged);
 
@@ -104,6 +113,15 @@ public sealed class MarkdownView : ContentView
     {
         get => (double)GetValue(H2FontSizeProperty);
         set => SetValue(H2FontSizeProperty, value);
+    }
+    
+    public static readonly BindableProperty H2SpacingBeforeProperty =
+        BindableProperty.Create(nameof(H2SpacingBefore), typeof(int), typeof(MarkdownView), 16, propertyChanged: OnMarkdownTextChanged);
+
+    public int H2SpacingBefore
+    {
+        get => (int)GetValue(H2SpacingBeforeProperty);
+        set => SetValue(H2SpacingBeforeProperty, value);
     }
     
     public static readonly BindableProperty H2SpacingAfterProperty =
@@ -135,6 +153,15 @@ public sealed class MarkdownView : ContentView
         set => SetValue(H3FontSizeProperty, value);
     }
     
+    public static readonly BindableProperty H3SpacingBeforeProperty =
+        BindableProperty.Create(nameof(H3SpacingBefore), typeof(int), typeof(MarkdownView), 32, propertyChanged: OnMarkdownTextChanged);
+
+    public int H3SpacingBefore
+    {
+        get => (int)GetValue(H3SpacingBeforeProperty);
+        set => SetValue(H3SpacingBeforeProperty, value);
+    }
+    
     public static readonly BindableProperty H3SpacingAfterProperty =
         BindableProperty.Create(nameof(H3SpacingAfter), typeof(int), typeof(MarkdownView), 0, propertyChanged: OnMarkdownTextChanged);
 
@@ -162,6 +189,15 @@ public sealed class MarkdownView : ContentView
     {
         get => (double)GetValue(H4FontSizeProperty);
         set => SetValue(H4FontSizeProperty, value);
+    }
+    
+    public static readonly BindableProperty H4SpacingBeforeProperty =
+        BindableProperty.Create(nameof(H4SpacingBefore), typeof(int), typeof(MarkdownView), 32, propertyChanged: OnMarkdownTextChanged);
+
+    public int H4SpacingBefore
+    {
+        get => (int)GetValue(H4SpacingBeforeProperty);
+        set => SetValue(H4SpacingBeforeProperty, value);
     }
     
     public static readonly BindableProperty H4SpacingAfterProperty =
@@ -578,6 +614,12 @@ public sealed class MarkdownView : ContentView
                 Spacing = ParagraphSpacing
             };
 
+            if (document.First() is SpacerBlock spacerBlock)
+            {
+                layout.Children.Add(RenderFirstSpacer(spacerBlock)); // Special case if the first block is a spacer.
+                document.Remove(spacerBlock);
+            }
+
             foreach (var block in document)
             {
                 try
@@ -633,7 +675,7 @@ public sealed class MarkdownView : ContentView
             int blocksInserted = 0;
 
             int? spacingBefore = GetSpacingBefore(currentBlock);
-            if (spacingBefore != null && previousBlock != null && previousBlock is not SpacerBlock)
+            if (spacingBefore != null && previousBlock is not SpacerBlock)
             {
                 document.Insert(i, new SpacerBlock{ Height = (int)spacingBefore });
                 blocksInserted++;
@@ -652,17 +694,19 @@ public sealed class MarkdownView : ContentView
     
     private int? GetSpacingBefore(Block block)
     {
-        if (block is
-            HeadingBlock { Level: 1 } or
-            HeadingBlock { Level: 2 } or
-            HeadingBlock { Level: 3 } or
-            QuoteBlock or
-            CodeBlock)
+        return block switch
         {
-            return (int)SectionSpacing;
-        }
-
-        return null;
+            QuoteBlock or CodeBlock => (int)SectionSpacing,
+            HeadingBlock h => h.Level switch
+            {
+                1 => H1SpacingBefore,
+                2 => H2SpacingBefore,
+                3 => H3SpacingBefore,
+                4 => H4SpacingBefore,
+                _ => null
+            },
+            _ => null
+        };
     }
 
     private int? GetSpacingAfter(Block block)
@@ -1182,11 +1226,16 @@ public sealed class MarkdownView : ContentView
         }
     }
 
-    private View RenderSpacer(SpacerBlock spacerBlock)
+    private View RenderFirstSpacer(SpacerBlock spacerBlock)
     {
-        // Remove the configured block spacing above and below this spacer. 
+        return RenderSpacer(spacerBlock, true);
+    }
+    
+    private View RenderSpacer(SpacerBlock spacerBlock, bool isFirstBlock = false)
+    {
+        // Remove the configured block spacing above and below this spacer (unless this is the very first block) 
         // This way, a spacer of 0 will actually result in 0 space between the blocks.
-        double extraHeight = spacerBlock.Height - 2 * ParagraphSpacing;
+        double extraHeight = isFirstBlock ? 0 : spacerBlock.Height - 2 * ParagraphSpacing;
         
         var grid = new Grid
         {
