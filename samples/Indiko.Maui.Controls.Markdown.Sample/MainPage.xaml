@@ -45,7 +45,8 @@
                           TextFontSize="16"
                           OnHyperLinkClicked="MarkdownView_HyperLinkClicked"
                           OnEmailClicked="MarkdownView_OnEmailClicked"
-                          Margin="20">
+                          Margin="20"
+                          ShowSpacersDebugInfo="False">
         </idk:MarkdownView>
     </ScrollView>
 

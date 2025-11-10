@@ -504,6 +504,17 @@ public sealed class MarkdownView : ContentView
         set => SetValue(LineHeightMultiplierProperty, value);
     }
     
+    // For visualizing spacers during development
+    public static readonly BindableProperty ShowSpacersDebugInfoProperty =
+        BindableProperty.Create(nameof(ShowSpacersDebugInfo), typeof(bool), typeof(MarkdownView),
+            propertyChanged: OnMarkdownTextChanged, defaultValue: false);
+
+    public bool ShowSpacersDebugInfo
+    {
+        get => (bool)GetValue(ShowSpacersDebugInfoProperty);
+        set => SetValue(ShowSpacersDebugInfoProperty, value);
+    }
+    
     private static void OnMarkdownTextContentChanged(BindableObject bindable, object oldValue, object newValue)
     {
         if (bindable is MarkdownView view && newValue is string text)
@@ -1183,15 +1194,17 @@ public sealed class MarkdownView : ContentView
             Margin = new Thickness(0, extraHeight, 0, 0),
         };
         
-        // For visualizing spacers during development:
-        // grid.Add(new Label
-        // {
-        //     Text = $"{spacerBlock.Height}",
-        //     FontSize = 8,
-        //     TextColor = Colors.DarkGrey,
-        //     HeightRequest = 20,
-        //     Margin = new Thickness(-15, -extraHeight + 10, 0, 0),
-        // });
+        if (ShowSpacersDebugInfo)
+        {
+            grid.Add(new Label
+            {
+                Text = $"{spacerBlock.Height}",
+                FontSize = 8,
+                TextColor = Colors.DarkGrey,
+                HeightRequest = 20,
+                Margin = new Thickness(-15, -extraHeight + 10, 0, 0),
+            });    
+        }
         
         return grid;
     }
