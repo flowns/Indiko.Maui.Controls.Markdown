@@ -69,13 +69,22 @@ public sealed class MarkdownView : ContentView
     }
 
     public static readonly BindableProperty H1FontSizeProperty =
-      BindableProperty.Create(nameof(H1FontSize), typeof(double), typeof(MarkdownView), defaultValue: 24d, propertyChanged: OnMarkdownTextChanged);
+      BindableProperty.Create(nameof(H1FontSize), typeof(double), typeof(MarkdownView), defaultValue: 20d, propertyChanged: OnMarkdownTextChanged);
 
     [TypeConverter(typeof(FontSizeConverter))]
     public double H1FontSize
     {
         get => (double)GetValue(H1FontSizeProperty);
         set => SetValue(H1FontSizeProperty, value);
+    }
+    
+    public static readonly BindableProperty H1SpacingAfterProperty =
+        BindableProperty.Create(nameof(H1SpacingAfter), typeof(int), typeof(MarkdownView), -4, propertyChanged: OnMarkdownTextChanged);
+
+    public int H1SpacingAfter
+    {
+        get => (int)GetValue(H1SpacingAfterProperty);
+        set => SetValue(H1SpacingAfterProperty, value);
     }
 
     public static readonly BindableProperty H2ColorProperty =
@@ -96,6 +105,15 @@ public sealed class MarkdownView : ContentView
         get => (double)GetValue(H2FontSizeProperty);
         set => SetValue(H2FontSizeProperty, value);
     }
+    
+    public static readonly BindableProperty H2SpacingAfterProperty =
+        BindableProperty.Create(nameof(H2SpacingAfter), typeof(int), typeof(MarkdownView), 32, propertyChanged: OnMarkdownTextChanged);
+
+    public int H2SpacingAfter
+    {
+        get => (int)GetValue(H2SpacingAfterProperty);
+        set => SetValue(H2SpacingAfterProperty, value);
+    }
 
     // H3Color property
     public static readonly BindableProperty H3ColorProperty =
@@ -108,13 +126,51 @@ public sealed class MarkdownView : ContentView
     }
 
     public static readonly BindableProperty H3FontSizeProperty =
-     BindableProperty.Create(nameof(H3FontSize), typeof(double), typeof(MarkdownView), defaultValue: 18d, propertyChanged: OnMarkdownTextChanged);
+     BindableProperty.Create(nameof(H3FontSize), typeof(double), typeof(MarkdownView), defaultValue: 16d, propertyChanged: OnMarkdownTextChanged);
 
     [TypeConverter(typeof(FontSizeConverter))]
     public double H3FontSize
     {
         get => (double)GetValue(H3FontSizeProperty);
         set => SetValue(H3FontSizeProperty, value);
+    }
+    
+    public static readonly BindableProperty H3SpacingAfterProperty =
+        BindableProperty.Create(nameof(H3SpacingAfter), typeof(int), typeof(MarkdownView), 0, propertyChanged: OnMarkdownTextChanged);
+
+    public int H3SpacingAfter
+    {
+        get => (int)GetValue(H3SpacingAfterProperty);
+        set => SetValue(H3SpacingAfterProperty, value);
+    }
+    
+    // H4Color property
+    public static readonly BindableProperty H4ColorProperty =
+        BindableProperty.Create(nameof(H4Color), typeof(Color), typeof(MarkdownView), Colors.Gray, propertyChanged: OnMarkdownTextChanged);
+
+    public Color H4Color
+    {
+        get => (Color)GetValue(H4ColorProperty);
+        set => SetValue(H4ColorProperty, value);
+    }
+
+    public static readonly BindableProperty H4FontSizeProperty =
+        BindableProperty.Create(nameof(H4FontSize), typeof(double), typeof(MarkdownView), defaultValue: 10d, propertyChanged: OnMarkdownTextChanged);
+
+    [TypeConverter(typeof(FontSizeConverter))]
+    public double H4FontSize
+    {
+        get => (double)GetValue(H4FontSizeProperty);
+        set => SetValue(H4FontSizeProperty, value);
+    }
+    
+    public static readonly BindableProperty H4SpacingAfterProperty =
+        BindableProperty.Create(nameof(H4SpacingAfter), typeof(int), typeof(MarkdownView), 16, propertyChanged: OnMarkdownTextChanged);
+
+    public int H4SpacingAfter
+    {
+        get => (int)GetValue(H4SpacingAfterProperty);
+        set => SetValue(H4SpacingAfterProperty, value);
     }
 
     /* **** Table Header Style ***/
@@ -553,10 +609,10 @@ public sealed class MarkdownView : ContentView
 
     private void PostProcessMarkdown(MarkdownDocument document)
     {
-        InsertDefaultSectionBreaks(document);
+        InsertDefaultSpacings(document);
     }
 
-    private void InsertDefaultSectionBreaks(MarkdownDocument document)
+    private void InsertDefaultSpacings(MarkdownDocument document)
     {
         for (int i = 0; i < document.Count; i++)
         {
@@ -565,36 +621,54 @@ public sealed class MarkdownView : ContentView
             Block? nextBlock = i < document.Count - 1 ? document[i + 1] : null;
             int blocksInserted = 0;
 
-            if (ShallHaveSectionBreakBefore(currentBlock) && previousBlock != null && previousBlock is not SpacerBlock)
+            int? spacingBefore = GetSpacingBefore(currentBlock);
+            if (spacingBefore != null && previousBlock != null && previousBlock is not SpacerBlock)
             {
-                document.Insert(i, new SpacerBlock{ Height = (int)SectionSpacing });
+                document.Insert(i, new SpacerBlock{ Height = (int)spacingBefore });
                 blocksInserted++;
             }
             
-            if (ShallHaveSectionBreakAfter(currentBlock) && nextBlock != null && nextBlock is not SpacerBlock)
+            int? spacingAfter = GetSpacingAfter(currentBlock);
+            if (spacingAfter != null && nextBlock != null && nextBlock is not SpacerBlock)
             {
-                document.Insert(i + blocksInserted + 1, new SpacerBlock{ Height = (int)SectionSpacing });
+                document.Insert(i + blocksInserted + 1, new SpacerBlock{ Height = (int)spacingAfter });
                 blocksInserted++;
             }
             
             i += blocksInserted; // Skip the newly inserted blocks
         }
     }
-
-    private bool ShallHaveSectionBreakBefore(Block block)
-    {
-        return block is 
-            HeadingBlock { Level: 1 } or 
-            HeadingBlock { Level: 2 } or 
-            QuoteBlock or 
-            CodeBlock;
-    }
     
-    private bool ShallHaveSectionBreakAfter(Block block)
+    private int? GetSpacingBefore(Block block)
     {
-        return block is 
-            QuoteBlock or 
-            CodeBlock;
+        if (block is
+            HeadingBlock { Level: 1 } or
+            HeadingBlock { Level: 2 } or
+            HeadingBlock { Level: 3 } or
+            QuoteBlock or
+            CodeBlock)
+        {
+            return (int)SectionSpacing;
+        }
+
+        return null;
+    }
+
+    private int? GetSpacingAfter(Block block)
+    {
+        return block switch
+        {
+            QuoteBlock or CodeBlock => (int)SectionSpacing,
+            HeadingBlock h => h.Level switch
+            {
+                1 => H1SpacingAfter,
+                2 => H2SpacingAfter,
+                3 => H3SpacingAfter,
+                4 => H4SpacingAfter,
+                _ => null
+            },
+            _ => null
+        };
     }
 
     private View? RenderBlock(Block block)
@@ -933,8 +1007,10 @@ public sealed class MarkdownView : ContentView
                 return H2Color;
             else if (blockLevel == 3)
                 return H3Color;
+            else if (blockLevel == 4)
+                return H4Color;
             else
-                return H3Color;
+                return H4Color;
         }
         catch (Exception ex)
         {
@@ -953,8 +1029,10 @@ public sealed class MarkdownView : ContentView
                 return H2FontSize;
             else if (blockLevel == 3)
                 return H3FontSize;
+            else if (blockLevel == 4)
+                return H4FontSize;
             else
-                return H3FontSize;
+                return H4FontSize;
         }
         catch (Exception ex)
         {
@@ -1110,6 +1188,7 @@ public sealed class MarkdownView : ContentView
         // {
         //     Text = $"{spacerBlock.Height}",
         //     FontSize = 8,
+        //     TextColor = Colors.DarkGrey,
         //     HeightRequest = 20,
         //     Margin = new Thickness(-15, -extraHeight + 10, 0, 0),
         // });
