@@ -29,5 +29,6 @@ Spacers can be used to control the space between elements, if the defaults don't
 > You can specify size and alignment for images. Spacers, even negative ones, can be used to control vertical placement.
 
 ![](https://www.svgrepo.com/show/530402/honor.svg){ alignment=Start width=40 height=40}
+
 ::spacer -40
 ![](https://www.svgrepo.com/show/530402/honor.svg){ alignment=End width=40 height=40}

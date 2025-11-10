@@ -3,11 +3,8 @@
 ## Taking stock of how you’re doing
 
 We want to take readings for:
-::spacer 0
 - **Mood**
-::spacer 0
 - **Sleep**
-::spacer 0
 - **Focus**
 
 

@@ -529,6 +529,15 @@ public sealed class MarkdownView : ContentView
         get => (double)GetValue(SectionSpacingProperty);
         set => SetValue(SectionSpacingProperty, value);
     }
+    
+    public static readonly BindableProperty ListSpacingProperty = BindableProperty.Create(nameof(ListSpacingProperty),
+        typeof(double), typeof(MarkdownView), propertyChanged: OnMarkdownTextChanged, defaultValue: 0d);
+
+    public double ListSpacing
+    {
+        get => (double)GetValue(ListSpacingProperty);
+        set => SetValue(ListSpacingProperty, value);
+    }
 
     public static readonly BindableProperty LineHeightMultiplierProperty =
         BindableProperty.Create(nameof(LineHeightMultiplier), typeof(double), typeof(MarkdownView),
@@ -697,6 +706,7 @@ public sealed class MarkdownView : ContentView
         return block switch
         {
             QuoteBlock or CodeBlock => (int)SectionSpacing,
+            ListBlock => (int)ListSpacing,
             HeadingBlock h => h.Level switch
             {
                 1 => H1SpacingBefore,
@@ -1423,7 +1433,7 @@ public sealed class MarkdownView : ContentView
             var stack = new VerticalStackLayout
             {
                 Padding = new Thickness(nestingLevel * 20, 0, 0, 0),
-                Spacing = ParagraphSpacing
+                Spacing = ListSpacing
             };
 
             foreach (ListItemBlock item in listBlock)
