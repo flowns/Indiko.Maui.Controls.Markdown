@@ -679,8 +679,8 @@ public sealed class MarkdownView : ContentView
         for (int i = 0; i < document.Count; i++)
         {
             Block currentBlock = document[i];
-            Block? previousBlock = i > 0 ? document[i - 1] : null;
-            Block? nextBlock = i < document.Count - 1 ? document[i + 1] : null;
+            Block previousBlock = i > 0 ? document[i - 1] : null;
+            Block nextBlock = i < document.Count - 1 ? document[i + 1] : null;
             int blocksInserted = 0;
 
             int? spacingBefore = GetSpacingBefore(currentBlock);
@@ -738,7 +738,7 @@ public sealed class MarkdownView : ContentView
         };
     }
 
-    private View? RenderBlock(Block block)
+    private View RenderBlock(Block block)
     {
         try
         {
@@ -937,7 +937,7 @@ public sealed class MarkdownView : ContentView
                         }
                         
                     }
-                    catch (Exception ex)
+                    catch (Exception)
                     {
                         Debug.WriteLine($"Warning: Unexpected value for alignment: '{alignmentValue}'");
                     }
@@ -1499,7 +1499,7 @@ public sealed class MarkdownView : ContentView
         }
     }
 
-    private FormattedString RenderInlines(ContainerInline? inlines)
+    private FormattedString RenderInlines(ContainerInline inlines)
     {
         var formatted = new FormattedString();
 
