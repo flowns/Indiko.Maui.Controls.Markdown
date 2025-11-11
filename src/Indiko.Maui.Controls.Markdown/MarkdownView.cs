@@ -577,7 +577,7 @@ public sealed class MarkdownView : ContentView
 
     private static void OnMarkdownTextChanged(BindableObject bindable, object oldValue, object newValue)
     {
-        // This metohd gets call for every property that is set. In the original code it tried to render all 
+        // This method gets called for every property that is set. In the original code it tried to render all 
         // properties as markdown. I can't understand why, so I changed it so it only renders if the actual
         // markdown content was changed. But if that causes problems, uncomment the line below to restore 
         // the original behaviour:
@@ -705,7 +705,8 @@ public sealed class MarkdownView : ContentView
     {
         return block switch
         {
-            QuoteBlock or CodeBlock => (int)SectionSpacing,
+            QuoteBlock => (int)SectionSpacing,
+            CodeBlock => (int)SectionSpacing,
             ListBlock => (int)ListSpacing,
             HeadingBlock h => h.Level switch
             {
@@ -723,7 +724,8 @@ public sealed class MarkdownView : ContentView
     {
         return block switch
         {
-            QuoteBlock or CodeBlock => (int)SectionSpacing,
+            QuoteBlock => (int)SectionSpacing,
+            CodeBlock => (int)SectionSpacing,
             HeadingBlock h => h.Level switch
             {
                 1 => H1SpacingAfter,
@@ -897,15 +899,7 @@ public sealed class MarkdownView : ContentView
                             }
                         }
                     }
-
-                    // The code below made all images fill the entire width and therefore centered on the page. This is
-                    // not always what you want, but we should check if there is any case where it is necessary after all.
-                    // // If no width was defined, use fallback based on device width
-                    // if (string.IsNullOrEmpty(widthValue))
-                    // {
-                    //     widthValue = ((DeviceDisplay.MainDisplayInfo.Width / DeviceDisplay.MainDisplayInfo.Density) - 20).ToString(); // 20 for padding
-                    // }
-
+                    
                     if (double.TryParse(widthValue, out var w))
                     {
                         img.WidthRequest = w;
@@ -949,15 +943,6 @@ public sealed class MarkdownView : ContentView
                     }
                     
                 }
-                // The code below made all images fill the entire width and therefore centered on the page. This is
-                // not always what you want, but we should check if there is any case where it is necessary after all. 
-                // else
-                // {
-                //     // No attributes found, fallback to dynamic width
-                //     double maxWidth = DeviceDisplay.MainDisplayInfo.Width / DeviceDisplay.MainDisplayInfo.Density - 20;
-                //     img.MinimumWidthRequest = maxWidth;
-                //     img.MaximumWidthRequest = maxWidth;
-                // }
 
                 // Load the image asynchronously
                 LoadImageAsync(link.Url).ContinueWith(t =>
@@ -1757,7 +1742,7 @@ public sealed class MarkdownView : ContentView
 
         return imageSource ?? ImageSource.FromFile("icon.png");
     }
-    
+
     internal void TriggerHyperLinkClicked(string url)
     {
         try

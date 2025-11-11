@@ -12,6 +12,6 @@ public class SpacerExtension : IMarkdownExtension
 
     public void Setup(MarkdownPipeline pipeline, IMarkdownRenderer renderer)
     {
-        // Optional: add custom renderer if needed
+        // Intentionally left empty. We don't need a custom renderer.
     }
 }
