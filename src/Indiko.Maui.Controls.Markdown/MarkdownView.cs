@@ -926,6 +926,10 @@ public sealed class MarkdownView : ContentView
                         {
                             if (alignmentValue.Equals("fullwidth", StringComparison.OrdinalIgnoreCase))
                             {
+                                if (Margin.Left > 0 || Margin.Right > 0)
+                                {
+                                    Debug.WriteLine("WARNING: Markdown view has horizontal margin and a 'fullwidth' image. This may not look correct on Android. Use padding on the markdown view instead.");
+                                }
                                 img.Margin = new Thickness(- Margin.Left - Padding.Left, 0, - Margin.Right - Padding.Right, 0);
                             }
                             else
