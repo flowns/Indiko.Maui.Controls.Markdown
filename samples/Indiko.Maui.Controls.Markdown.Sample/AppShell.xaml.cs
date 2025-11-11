@@ -4,12 +4,9 @@ namespace Indiko.Maui.Controls.Markdown.Sample;
 
 public partial class AppShell : Shell
 {
-	private TabBar tabBar = new();
-	
 	public AppShell()
 	{
 		InitializeComponent();
-		Items.Add(tabBar);
 	}
 	
 	protected override async void OnAppearing()
@@ -22,6 +19,9 @@ public partial class AppShell : Shell
 			await AddMarkdown("Assessment 1", "Assessment1.md");
 			await AddMarkdown("Assessment 2", "Assessment2.md");
 			await AddMarkdown("Original", "OriginalExample.md");
+			
+			// Remove the default empty tab. Have to do it after adding all the tabs to avoid an Android crash.
+			TabBar.Items.RemoveAt(0);	
 		}
 		catch (Exception e)
 		{
@@ -31,7 +31,7 @@ public partial class AppShell : Shell
 
 	private async Task AddMarkdown(string title, string filename)
 	{
-		tabBar.Items.Add(new ShellContent
+		TabBar.Items.Add(new ShellContent
 		{
 			Title = title,
 			Content = new MainPage(),
