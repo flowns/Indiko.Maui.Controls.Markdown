@@ -1137,14 +1137,17 @@ public sealed class MarkdownView : ContentView
                 BackgroundColor = CodeBlockBackgroundColor,
                 Stroke = new SolidColorBrush(CodeBlockBorderColor),
                 StrokeShape = new RoundRectangle().WithCornerRadius(4),
-                Content = new Label
+                Content = new Grid  // Workaround for Android. Adding grid to get LineHeight to work in Boarder.
                 {
-                    Text = block.Lines.ToString(),
-                    FontFamily = CodeBlockFontFace,
-                    TextColor = CodeBlockTextColor,
-                    FontSize = CodeBlockFontSize,
-                    LineHeight = LineHeightMultiplier,
-                    LineBreakMode = LineBreakMode.WordWrap,
+                    new Label
+                    {
+                        Text = block.Lines.ToString(),
+                        FontFamily = CodeBlockFontFace,
+                        TextColor = CodeBlockTextColor,
+                        FontSize = CodeBlockFontSize,
+                        LineHeight = LineHeightMultiplier,
+                        LineBreakMode = LineBreakMode.WordWrap,
+                    }
                 }
             };
         }
@@ -1164,14 +1167,17 @@ public sealed class MarkdownView : ContentView
                 BackgroundColor = CodeBlockBackgroundColor,
                 Stroke = new SolidColorBrush(CodeBlockBorderColor),
                 StrokeShape = new RoundRectangle().WithCornerRadius(4),
-                Content = new Label
+                Content = new Grid  // Workaround for Android. Adding grid to get LineHeight to work in Boarder.
                 {
-                    Text = block.Lines.ToString(),
-                    FontFamily = CodeBlockFontFace,
-                    TextColor = CodeBlockTextColor,
-                    FontSize = CodeBlockFontSize,
-                    LineHeight = LineHeightMultiplier,
-                    LineBreakMode = LineBreakMode.WordWrap,
+                    new Label
+                    {
+                        Text = block.Lines.ToString(),
+                        FontFamily = CodeBlockFontFace,
+                        TextColor = CodeBlockTextColor,
+                        FontSize = CodeBlockFontSize,
+                        LineHeight = LineHeightMultiplier,
+                        LineBreakMode = LineBreakMode.WordWrap,
+                    }
                 }
             };
         }
