@@ -659,14 +659,14 @@ public sealed class MarkdownView : ContentView
     private string ReplaceDoubleEmptyLinesWithSectionSpacer(string input)
     {
         // Normalize line endings to \n for consistent and safe processing
-        string normalized = Regex.Replace(input, @"\r\n|\r", "\n");
+        string normalized = Regex.Replace(input, @"\r\n|\r", "\n", RegexOptions.Compiled);
 
         // Regex pattern to match two or more consecutive empty lines
         string pattern = @"(\s*?\n){3,}";
         string sectionSpacer = $"\n::spacer {SectionSpacing}\n";
 
         // Replace all matches with the section spacer
-        return Regex.Replace(normalized, pattern, sectionSpacer);;
+        return Regex.Replace(normalized, pattern, sectionSpacer, RegexOptions.Compiled);
     }
 
     private void PostProcessMarkdown(MarkdownDocument document)
@@ -764,49 +764,6 @@ public sealed class MarkdownView : ContentView
             return null;
         }
     }
-
-    //private View RenderParagraph(ParagraphBlock block)
-    //{
-    //    try
-    //    {
-    //        if (block.Inline?.FirstChild is LinkInline link && link.IsImage)
-    //        {
-    //            var image = new Image
-    //            {
-    //                Aspect = ImageAspect,
-    //                HorizontalOptions = LayoutOptions.Fill,
-    //                VerticalOptions = LayoutOptions.Fill,
-    //                Margin = new Thickness(0),
-    //            };
-
-    //            LoadImageAsync(link.Url).ContinueWith(task =>
-    //            {
-    //                if (task.Status == TaskStatus.RanToCompletion)
-    //                {
-    //                    var imageSource = task.Result;
-    //                    MainThread.BeginInvokeOnMainThread(() => image.Source = imageSource);
-    //                }
-    //                else if (task.Exception != null)
-    //                {
-    //                    Console.WriteLine($"Error loading image: {task.Exception.InnerException?.Message}");
-    //                }
-    //            });
-
-    //            return image;
-    //        }
-
-    //        return new Label
-    //        {
-    //            FormattedText = RenderInlines(block.Inline),
-    //            LineBreakMode = LineBreakMode.WordWrap,
-    //        };
-    //    }
-    //    catch (Exception ex)
-    //    {
-    //        Console.WriteLine($"Error rendering paragraph: {ex.Message}");
-    //        return new Label { Text = "[Error rendering paragraph]" };
-    //    }
-    //}
 
     private View RenderParagraph(ParagraphBlock block)
     {
