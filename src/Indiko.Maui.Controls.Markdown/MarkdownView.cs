@@ -963,7 +963,6 @@ public sealed class MarkdownView : ContentView
                         {
                             Text = literal.Content.Text.Substring(literal.Content.Start, literal.Content.Length),
                             FontSize = GetFontsizeForBlockLevel(block.Level),
-                            FontAttributes = FontAttributes.Bold,
                             TextColor = GetTextColorForBlockLevel(block.Level),
                             FontFamily = TextFontFaceBold,
                             LineHeight = LineHeightMultiplier
@@ -1275,7 +1274,6 @@ public sealed class MarkdownView : ContentView
                     {
                         FormattedText = RenderInlines((cell.FirstOrDefault() as ParagraphBlock)?.Inline),
                         BackgroundColor = row.IsHeader ? TableHeaderBackgroundColor : TableRowBackgroundColor,
-                        FontAttributes = row.IsHeader ? FontAttributes.Bold : FontAttributes.None,
                         TextColor = row.IsHeader ? TableHeaderTextColor : TableRowTextColor,
                         FontFamily = row.IsHeader ? TableHeaderFontFace : TableRowFontFace,
                         FontSize = row.IsHeader ? TableHeaderFontSize : TableRowFontSize,
