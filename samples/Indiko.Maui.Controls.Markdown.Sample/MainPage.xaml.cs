@@ -6,20 +6,23 @@ public partial class MainPage : ContentPage
 {
 	MainPageViewModel mainPageViewModel;
 
-	public MainPage(MainPageViewModel mainPageViewModel)
+	public MainPage()
 	{
 		InitializeComponent();
-		this.mainPageViewModel = mainPageViewModel;
-		BindingContext = mainPageViewModel;
 	}
-
-	protected override void OnAppearing()
+	
+	protected override void OnBindingContextChanged()
 	{
-		base.OnAppearing();
-		mainPageViewModel.OnAppearing(null);
+		base.OnBindingContextChanged();
+		
+		if (BindingContext is MainPageViewModel viewModel)
+		{
+			mainPageViewModel = viewModel;
+			mainPageViewModel.OnAppearing(null);
+		}
 	}
 
-    private void MarkdownView_HyperLinkClicked(object sender, LinkEventArgs e)
+	private void MarkdownView_HyperLinkClicked(object sender, LinkEventArgs e)
     {
 		DisplayAlert(Title, e.Url, "OK");
     }

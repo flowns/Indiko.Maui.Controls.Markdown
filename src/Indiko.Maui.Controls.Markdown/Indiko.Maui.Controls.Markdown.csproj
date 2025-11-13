@@ -38,7 +38,7 @@
 	</PropertyGroup>
 
 	<PropertyGroup>
-		<Version>1.3.13-flowfix</Version>
+		<Version>1.3.13-flowfix.2</Version>
 	</PropertyGroup>
 
 	<ItemGroup>

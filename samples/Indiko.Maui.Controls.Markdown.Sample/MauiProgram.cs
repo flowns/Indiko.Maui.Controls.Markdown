@@ -10,16 +10,12 @@ public static class MauiProgram
             .UseMarkdownView()
             .ConfigureFonts(fonts =>
         {
-            fonts.AddFont("OpenSans-Regular.ttf", "OpenSansRegular");
-            fonts.AddFont("OpenSans-Semibold.ttf", "OpenSansSemibold");
-            fonts.AddFont("CamingoCode-Regular.tff", "CamingoCodeRegular");
-            fonts.AddFont("CamingoCode-Italic.tff", "CamingoCodeItalic");
-            fonts.AddFont("CamingoCode-BoldItalic.tff", "CamingoCodeBoldItalic");
-            fonts.AddFont("CamingoCode-Bold.tff", "CamingoCodeBold");
+            fonts.AddFont("neueSerie57®-Regular.otf", "OpenSansRegular");
+            fonts.AddFont("neueSerie57®-Book.otf", "OpenSansSemiBold");
+            fonts.AddFont("neueSerie57®-RegularItalic.otf", "OpenSansItalic");
         });
 
         builder.Services.AddSingleton<MainPage>();
-        builder.Services.AddSingleton<MainPageViewModel>();
         Routing.RegisterRoute(nameof(MainPage), typeof(MainPage));
 
         return builder.Build();

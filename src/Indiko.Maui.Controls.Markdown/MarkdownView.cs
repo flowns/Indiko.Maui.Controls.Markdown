@@ -1,8 +1,10 @@
 using System.ComponentModel;
+using System.Diagnostics;
 using System.Text;
 using System.Text.RegularExpressions;
 using System.Windows.Input;
 using System.Xml;
+using Indiko.Maui.Controls.Markdown.Extensions;
 using Markdig;
 using Markdig.Extensions.CustomContainers;
 using Markdig.Extensions.Mathematics;
@@ -22,7 +24,7 @@ public sealed class MarkdownView : ContentView
     private static readonly Regex EmailRegex = new Regex(@"\b[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Z|a-z]{2,}\b", RegexOptions.Compiled);
 
     public static readonly BindableProperty MarkdownTextProperty =
-        BindableProperty.Create(nameof(MarkdownText), typeof(string), typeof(MarkdownView), propertyChanged: OnMarkdownTextChanged);
+        BindableProperty.Create(nameof(MarkdownText), typeof(string), typeof(MarkdownView), propertyChanged: OnMarkdownTextContentChanged);
 
     public string MarkdownText
     {
@@ -67,13 +69,31 @@ public sealed class MarkdownView : ContentView
     }
 
     public static readonly BindableProperty H1FontSizeProperty =
-      BindableProperty.Create(nameof(H1FontSize), typeof(double), typeof(MarkdownView), defaultValue: 24d, propertyChanged: OnMarkdownTextChanged);
+      BindableProperty.Create(nameof(H1FontSize), typeof(double), typeof(MarkdownView), defaultValue: 20d, propertyChanged: OnMarkdownTextChanged);
 
     [TypeConverter(typeof(FontSizeConverter))]
     public double H1FontSize
     {
         get => (double)GetValue(H1FontSizeProperty);
         set => SetValue(H1FontSizeProperty, value);
+    }
+    
+    public static readonly BindableProperty H1SpacingBeforeProperty =
+        BindableProperty.Create(nameof(H1SpacingBefore), typeof(int), typeof(MarkdownView), 16, propertyChanged: OnMarkdownTextChanged);
+
+    public int H1SpacingBefore
+    {
+        get => (int)GetValue(H1SpacingBeforeProperty);
+        set => SetValue(H1SpacingBeforeProperty, value);
+    }
+    
+    public static readonly BindableProperty H1SpacingAfterProperty =
+        BindableProperty.Create(nameof(H1SpacingAfter), typeof(int), typeof(MarkdownView), -4, propertyChanged: OnMarkdownTextChanged);
+
+    public int H1SpacingAfter
+    {
+        get => (int)GetValue(H1SpacingAfterProperty);
+        set => SetValue(H1SpacingAfterProperty, value);
     }
 
     public static readonly BindableProperty H2ColorProperty =
@@ -94,6 +114,24 @@ public sealed class MarkdownView : ContentView
         get => (double)GetValue(H2FontSizeProperty);
         set => SetValue(H2FontSizeProperty, value);
     }
+    
+    public static readonly BindableProperty H2SpacingBeforeProperty =
+        BindableProperty.Create(nameof(H2SpacingBefore), typeof(int), typeof(MarkdownView), 16, propertyChanged: OnMarkdownTextChanged);
+
+    public int H2SpacingBefore
+    {
+        get => (int)GetValue(H2SpacingBeforeProperty);
+        set => SetValue(H2SpacingBeforeProperty, value);
+    }
+    
+    public static readonly BindableProperty H2SpacingAfterProperty =
+        BindableProperty.Create(nameof(H2SpacingAfter), typeof(int), typeof(MarkdownView), 32, propertyChanged: OnMarkdownTextChanged);
+
+    public int H2SpacingAfter
+    {
+        get => (int)GetValue(H2SpacingAfterProperty);
+        set => SetValue(H2SpacingAfterProperty, value);
+    }
 
     // H3Color property
     public static readonly BindableProperty H3ColorProperty =
@@ -106,13 +144,69 @@ public sealed class MarkdownView : ContentView
     }
 
     public static readonly BindableProperty H3FontSizeProperty =
-     BindableProperty.Create(nameof(H3FontSize), typeof(double), typeof(MarkdownView), defaultValue: 18d, propertyChanged: OnMarkdownTextChanged);
+     BindableProperty.Create(nameof(H3FontSize), typeof(double), typeof(MarkdownView), defaultValue: 16d, propertyChanged: OnMarkdownTextChanged);
 
     [TypeConverter(typeof(FontSizeConverter))]
     public double H3FontSize
     {
         get => (double)GetValue(H3FontSizeProperty);
         set => SetValue(H3FontSizeProperty, value);
+    }
+    
+    public static readonly BindableProperty H3SpacingBeforeProperty =
+        BindableProperty.Create(nameof(H3SpacingBefore), typeof(int), typeof(MarkdownView), 32, propertyChanged: OnMarkdownTextChanged);
+
+    public int H3SpacingBefore
+    {
+        get => (int)GetValue(H3SpacingBeforeProperty);
+        set => SetValue(H3SpacingBeforeProperty, value);
+    }
+    
+    public static readonly BindableProperty H3SpacingAfterProperty =
+        BindableProperty.Create(nameof(H3SpacingAfter), typeof(int), typeof(MarkdownView), 0, propertyChanged: OnMarkdownTextChanged);
+
+    public int H3SpacingAfter
+    {
+        get => (int)GetValue(H3SpacingAfterProperty);
+        set => SetValue(H3SpacingAfterProperty, value);
+    }
+    
+    // H4Color property
+    public static readonly BindableProperty H4ColorProperty =
+        BindableProperty.Create(nameof(H4Color), typeof(Color), typeof(MarkdownView), Colors.Gray, propertyChanged: OnMarkdownTextChanged);
+
+    public Color H4Color
+    {
+        get => (Color)GetValue(H4ColorProperty);
+        set => SetValue(H4ColorProperty, value);
+    }
+
+    public static readonly BindableProperty H4FontSizeProperty =
+        BindableProperty.Create(nameof(H4FontSize), typeof(double), typeof(MarkdownView), defaultValue: 10d, propertyChanged: OnMarkdownTextChanged);
+
+    [TypeConverter(typeof(FontSizeConverter))]
+    public double H4FontSize
+    {
+        get => (double)GetValue(H4FontSizeProperty);
+        set => SetValue(H4FontSizeProperty, value);
+    }
+    
+    public static readonly BindableProperty H4SpacingBeforeProperty =
+        BindableProperty.Create(nameof(H4SpacingBefore), typeof(int), typeof(MarkdownView), 32, propertyChanged: OnMarkdownTextChanged);
+
+    public int H4SpacingBefore
+    {
+        get => (int)GetValue(H4SpacingBeforeProperty);
+        set => SetValue(H4SpacingBeforeProperty, value);
+    }
+    
+    public static readonly BindableProperty H4SpacingAfterProperty =
+        BindableProperty.Create(nameof(H4SpacingAfter), typeof(int), typeof(MarkdownView), 16, propertyChanged: OnMarkdownTextChanged);
+
+    public int H4SpacingAfter
+    {
+        get => (int)GetValue(H4SpacingAfterProperty);
+        set => SetValue(H4SpacingAfterProperty, value);
     }
 
     /* **** Table Header Style ***/
@@ -222,6 +316,24 @@ public sealed class MarkdownView : ContentView
         get => (string)GetValue(TextFontFaceProperty);
         set => SetValue(TextFontFaceProperty, value);
     }
+    
+    public static readonly BindableProperty TextFontFaceBoldProperty =
+        BindableProperty.Create(nameof(TextFontFaceBold), typeof(string), typeof(MarkdownView), propertyChanged: OnMarkdownTextChanged);
+
+    public string TextFontFaceBold
+    {
+        get => (string)GetValue(TextFontFaceBoldProperty);
+        set => SetValue(TextFontFaceBoldProperty, value);
+    }
+    
+    public static readonly BindableProperty TextFontFaceItalicProperty =
+        BindableProperty.Create(nameof(TextFontFaceItalic), typeof(string), typeof(MarkdownView), propertyChanged: OnMarkdownTextChanged);
+
+    public string TextFontFaceItalic
+    {
+        get => (string)GetValue(TextFontFaceItalicProperty);
+        set => SetValue(TextFontFaceItalicProperty, value);
+    }
 
     /* ****** Line Block Styling ******** */
 
@@ -302,8 +414,8 @@ public sealed class MarkdownView : ContentView
     }
 
     public static readonly BindableProperty BlockQuoteTextColorProperty =
-      BindableProperty.Create(nameof(BlockQuoteTextColor), typeof(Color), typeof(MarkdownView), Colors.BlueViolet, propertyChanged: OnMarkdownTextChanged);
-
+      BindableProperty.Create(nameof(BlockQuoteTextColor), typeof(Color), typeof(MarkdownView), Colors.Black, propertyChanged: OnMarkdownTextChanged);
+    
     public Color BlockQuoteTextColor
     {
         get => (Color)GetValue(BlockQuoteTextColorProperty);
@@ -317,6 +429,16 @@ public sealed class MarkdownView : ContentView
     {
         get => (string)GetValue(BlockQuoteFontFaceProperty);
         set => SetValue(BlockQuoteFontFaceProperty, value);
+    }
+    
+    public static readonly BindableProperty BlockQuoteFontSizeProperty =
+        BindableProperty.Create(nameof(BlockQuoteFontSize), typeof(double), typeof(MarkdownView), defaultValue: 14d, propertyChanged: OnMarkdownTextChanged);
+
+    [TypeConverter(typeof(FontSizeConverter))]
+    public double BlockQuoteFontSize
+    {
+        get => (double)GetValue(BlockQuoteFontSizeProperty);
+        set => SetValue(BlockQuoteFontSizeProperty, value);
     }
 
     /* ****** Hyplerlink Styling ******** */
@@ -391,12 +513,30 @@ public sealed class MarkdownView : ContentView
     }
 
     public static readonly BindableProperty ParagraphSpacingProperty = BindableProperty.Create(nameof(ParagraphSpacing),
-        typeof(double), typeof(MarkdownView), propertyChanged: OnMarkdownTextChanged, defaultValue: 1.0);
+        typeof(double), typeof(MarkdownView), propertyChanged: OnMarkdownTextChanged, defaultValue: 16d);
 
     public double ParagraphSpacing
     {
         get => (double)GetValue(ParagraphSpacingProperty);
         set => SetValue(ParagraphSpacingProperty, value);
+    }
+    
+    public static readonly BindableProperty SectionSpacingProperty = BindableProperty.Create(nameof(SectionSpacing),
+        typeof(double), typeof(MarkdownView), propertyChanged: OnMarkdownTextChanged, defaultValue: 32d);
+
+    public double SectionSpacing
+    {
+        get => (double)GetValue(SectionSpacingProperty);
+        set => SetValue(SectionSpacingProperty, value);
+    }
+    
+    public static readonly BindableProperty ListSpacingProperty = BindableProperty.Create(nameof(ListSpacingProperty),
+        typeof(double), typeof(MarkdownView), propertyChanged: OnMarkdownTextChanged, defaultValue: 0d);
+
+    public double ListSpacing
+    {
+        get => (double)GetValue(ListSpacingProperty);
+        set => SetValue(ListSpacingProperty, value);
     }
 
     public static readonly BindableProperty LineHeightMultiplierProperty =
@@ -408,8 +548,19 @@ public sealed class MarkdownView : ContentView
         get => (double)GetValue(LineHeightMultiplierProperty);
         set => SetValue(LineHeightMultiplierProperty, value);
     }
+    
+    // For visualizing spacers during development
+    public static readonly BindableProperty ShowSpacersDebugInfoProperty =
+        BindableProperty.Create(nameof(ShowSpacersDebugInfo), typeof(bool), typeof(MarkdownView),
+            propertyChanged: OnMarkdownTextChanged, defaultValue: false);
 
-    private static void OnMarkdownTextChanged(BindableObject bindable, object oldValue, object newValue)
+    public bool ShowSpacersDebugInfo
+    {
+        get => (bool)GetValue(ShowSpacersDebugInfoProperty);
+        set => SetValue(ShowSpacersDebugInfoProperty, value);
+    }
+    
+    private static void OnMarkdownTextContentChanged(BindableObject bindable, object oldValue, object newValue)
     {
         if (bindable is MarkdownView view && newValue is string text)
         {
@@ -422,6 +573,16 @@ public sealed class MarkdownView : ContentView
                 Console.WriteLine($"Error rendering markdown: {ex.Message}");
             }
         }
+    }
+
+    private static void OnMarkdownTextChanged(BindableObject bindable, object oldValue, object newValue)
+    {
+        // This method gets called for every property that is set. In the original code it tried to render all 
+        // properties as markdown. I can't understand why, so I changed it so it only renders if the actual
+        // markdown content was changed. But if that causes problems, uncomment the line below to restore 
+        // the original behaviour:
+        
+        // OnMarkdownTextContentChanged(bindable, oldValue, newValue);
     }
 
     private void RenderMarkdown(string markdown)
@@ -448,16 +609,25 @@ public sealed class MarkdownView : ContentView
                 .UseAutoLinks()
                 .UseFooters()
                 .UseMathematics()
+                .Use(new SpacerExtension())
                 .Build();
 
-            MarkdownDocument document = Markdig.Markdown.Parse(markdown, pipeline);
+            string preProcessedMarkdown = PreProcessMarkdown(markdown);
+            MarkdownDocument document = Markdig.Markdown.Parse(preProcessedMarkdown, pipeline);
+            PostProcessMarkdown(document);
 
             var layout = new VerticalStackLayout
             {
                 Margin = 0,
                 Padding = 0,
-                Spacing = (8 * ParagraphSpacing)
+                Spacing = ParagraphSpacing
             };
+
+            if (document.First() is SpacerBlock spacerBlock)
+            {
+                layout.Children.Add(RenderFirstSpacer(spacerBlock)); // Special case if the first block is a spacer.
+                document.Remove(spacerBlock);
+            }
 
             foreach (var block in document)
             {
@@ -480,8 +650,95 @@ public sealed class MarkdownView : ContentView
             Content = new Label { Text = "Error rendering markdown content." };
         }
     }
+    
+    private string PreProcessMarkdown(string markdown)
+    {
+        return ReplaceDoubleEmptyLinesWithSectionSpacer(markdown);
+    }
+    
+    private string ReplaceDoubleEmptyLinesWithSectionSpacer(string input)
+    {
+        // Normalize line endings to \n for consistent and safe processing
+        string normalized = Regex.Replace(input, @"\r\n|\r", "\n", RegexOptions.Compiled);
 
-    private View? RenderBlock(Block block)
+        // Regex pattern to match two or more consecutive empty lines
+        string pattern = @"(\s*?\n){3,}";
+        string sectionSpacer = $"\n::spacer {SectionSpacing}\n";
+
+        // Replace all matches with the section spacer
+        return Regex.Replace(normalized, pattern, sectionSpacer, RegexOptions.Compiled);
+    }
+
+    private void PostProcessMarkdown(MarkdownDocument document)
+    {
+        InsertDefaultSpacings(document);
+    }
+
+    private void InsertDefaultSpacings(MarkdownDocument document)
+    {
+        for (int i = 0; i < document.Count; i++)
+        {
+            Block currentBlock = document[i];
+            Block previousBlock = i > 0 ? document[i - 1] : null;
+            Block nextBlock = i < document.Count - 1 ? document[i + 1] : null;
+            int blocksInserted = 0;
+
+            int? spacingBefore = GetSpacingBefore(currentBlock);
+            if (spacingBefore != null && previousBlock is not SpacerBlock)
+            {
+                document.Insert(i, new SpacerBlock{ Height = (int)spacingBefore });
+                blocksInserted++;
+            }
+            
+            int? spacingAfter = GetSpacingAfter(currentBlock);
+            if (spacingAfter != null && nextBlock != null && nextBlock is not SpacerBlock)
+            {
+                document.Insert(i + blocksInserted + 1, new SpacerBlock{ Height = (int)spacingAfter });
+                blocksInserted++;
+            }
+            
+            i += blocksInserted; // Skip the newly inserted blocks
+        }
+    }
+    
+    private int? GetSpacingBefore(Block block)
+    {
+        return block switch
+        {
+            QuoteBlock => (int)SectionSpacing,
+            CodeBlock => (int)SectionSpacing,
+            ListBlock => (int)ListSpacing,
+            HeadingBlock h => h.Level switch
+            {
+                1 => H1SpacingBefore,
+                2 => H2SpacingBefore,
+                3 => H3SpacingBefore,
+                4 => H4SpacingBefore,
+                _ => null
+            },
+            _ => null
+        };
+    }
+
+    private int? GetSpacingAfter(Block block)
+    {
+        return block switch
+        {
+            QuoteBlock => (int)SectionSpacing,
+            CodeBlock => (int)SectionSpacing,
+            HeadingBlock h => h.Level switch
+            {
+                1 => H1SpacingAfter,
+                2 => H2SpacingAfter,
+                3 => H3SpacingAfter,
+                4 => H4SpacingAfter,
+                _ => null
+            },
+            _ => null
+        };
+    }
+
+    private View RenderBlock(Block block)
     {
         try
         {
@@ -491,11 +748,12 @@ public sealed class MarkdownView : ContentView
                 HeadingBlock h => RenderHeading(h),
                 ListBlock l => RenderList(l),
                 QuoteBlock q => RenderQuote(q),
-                ThematicBreakBlock => new BoxView { HeightRequest = 1, BackgroundColor = LineColor },
+                ThematicBreakBlock => new BoxView { HeightRequest = 1, Color = LineColor, Margin = new Thickness(0, 0, 0, 0)},
                 Table table => RenderTable(table),
                 CustomContainer cc => RenderCustomContainer(cc),
                 MathBlock m => RenderFormula(m),
                 CodeBlock c => c is FencedCodeBlock fenced ? RenderCode(fenced) : RenderCodeBlock(c),
+                SpacerBlock s => RenderSpacer(s),
                 BlankLineBlock => null,
                 _ => null
             };
@@ -506,49 +764,6 @@ public sealed class MarkdownView : ContentView
             return null;
         }
     }
-
-    //private View RenderParagraph(ParagraphBlock block)
-    //{
-    //    try
-    //    {
-    //        if (block.Inline?.FirstChild is LinkInline link && link.IsImage)
-    //        {
-    //            var image = new Image
-    //            {
-    //                Aspect = ImageAspect,
-    //                HorizontalOptions = LayoutOptions.Fill,
-    //                VerticalOptions = LayoutOptions.Fill,
-    //                Margin = new Thickness(0),
-    //            };
-
-    //            LoadImageAsync(link.Url).ContinueWith(task =>
-    //            {
-    //                if (task.Status == TaskStatus.RanToCompletion)
-    //                {
-    //                    var imageSource = task.Result;
-    //                    MainThread.BeginInvokeOnMainThread(() => image.Source = imageSource);
-    //                }
-    //                else if (task.Exception != null)
-    //                {
-    //                    Console.WriteLine($"Error loading image: {task.Exception.InnerException?.Message}");
-    //                }
-    //            });
-
-    //            return image;
-    //        }
-
-    //        return new Label
-    //        {
-    //            FormattedText = RenderInlines(block.Inline),
-    //            LineBreakMode = LineBreakMode.WordWrap,
-    //        };
-    //    }
-    //    catch (Exception ex)
-    //    {
-    //        Console.WriteLine($"Error rendering paragraph: {ex.Message}");
-    //        return new Label { Text = "[Error rendering paragraph]" };
-    //    }
-    //}
 
     private View RenderParagraph(ParagraphBlock block)
     {
@@ -617,6 +832,7 @@ public sealed class MarkdownView : ContentView
                     string widthValue = null;
                     string heightValue = null;
                     string aspectValue = null;
+                    string alignmentValue = null;
 
                     if (attrs.Properties != null)
                     {
@@ -634,15 +850,13 @@ public sealed class MarkdownView : ContentView
                             {
                                 aspectValue = prop.Value;
                             }
+                            else if (prop.Key.Equals("alignment", StringComparison.OrdinalIgnoreCase))
+                            {
+                                alignmentValue = prop.Value;
+                            }
                         }
                     }
-
-                    // If no width was defined, use fallback based on device width
-                    if (string.IsNullOrEmpty(widthValue))
-                    {
-                        widthValue = ((DeviceDisplay.MainDisplayInfo.Width / DeviceDisplay.MainDisplayInfo.Density) - 20).ToString(); // 20 for padding
-                    }
-
+                    
                     if (double.TryParse(widthValue, out var w))
                     {
                         img.WidthRequest = w;
@@ -662,13 +876,33 @@ public sealed class MarkdownView : ContentView
                     {
                         img.Aspect = parsedAspect;
                     }
-                }
-                else
-                {
-                    // No attributes found, fallback to dynamic width
-                    double maxWidth = DeviceDisplay.MainDisplayInfo.Width / DeviceDisplay.MainDisplayInfo.Density - 20;
-                    img.MinimumWidthRequest = maxWidth;
-                    img.MaximumWidthRequest = maxWidth;
+                    
+                    try
+                    {
+                        if (!string.IsNullOrEmpty(alignmentValue))
+                        {
+                            if (alignmentValue.Equals("fullwidth", StringComparison.OrdinalIgnoreCase))
+                            {
+                                if (Margin.Left > 0 || Margin.Right > 0)
+                                {
+                                    Debug.WriteLine("WARNING: Markdown view has horizontal margin and a 'fullwidth' image. This may not look correct on Android. Use padding on the markdown view instead.");
+                                }
+                                img.Margin = new Thickness(- Margin.Left - Padding.Left, 0, - Margin.Right - Padding.Right, 0);
+                            }
+                            else
+                            {
+                                TypeConverter layoutConverter = TypeDescriptor.GetConverter(typeof(LayoutOptions));
+                                LayoutOptions? alignment = (LayoutOptions?)layoutConverter.ConvertFromString(alignmentValue);
+                                img.HorizontalOptions = alignment ?? LayoutOptions.Start;    
+                            }
+                        }
+                        
+                    }
+                    catch (Exception)
+                    {
+                        Debug.WriteLine($"Warning: Unexpected value for alignment: '{alignmentValue}'");
+                    }
+                    
                 }
 
                 // Load the image asynchronously
@@ -731,7 +965,7 @@ public sealed class MarkdownView : ContentView
                             FontSize = GetFontsizeForBlockLevel(block.Level),
                             FontAttributes = FontAttributes.Bold,
                             TextColor = GetTextColorForBlockLevel(block.Level),
-                            FontFamily = TextFontFace,
+                            FontFamily = TextFontFaceBold,
                             LineHeight = LineHeightMultiplier
                         });
                     }
@@ -742,9 +976,8 @@ public sealed class MarkdownView : ContentView
                         {
                             Text = text,
                             FontSize = GetFontsizeForBlockLevel(block.Level),
-                            FontAttributes = em.DelimiterCount == 2 ? FontAttributes.Bold : FontAttributes.Italic,
                             TextColor = GetTextColorForBlockLevel(block.Level),
-                            FontFamily = TextFontFace,
+                            FontFamily = em.DelimiterCount == 2 ? TextFontFaceBold : TextFontFaceItalic,
                             LineHeight = LineHeightMultiplier
                         });
                     }
@@ -785,8 +1018,10 @@ public sealed class MarkdownView : ContentView
                 return H2Color;
             else if (blockLevel == 3)
                 return H3Color;
+            else if (blockLevel == 4)
+                return H4Color;
             else
-                return H3Color;
+                return H4Color;
         }
         catch (Exception ex)
         {
@@ -805,8 +1040,10 @@ public sealed class MarkdownView : ContentView
                 return H2FontSize;
             else if (blockLevel == 3)
                 return H3FontSize;
+            else if (blockLevel == 4)
+                return H4FontSize;
             else
-                return H3FontSize;
+                return H4FontSize;
         }
         catch (Exception ex)
         {
@@ -821,20 +1058,34 @@ public sealed class MarkdownView : ContentView
         {
             var quoteContent = new VerticalStackLayout()
             {
-                Margin = 10
+                Margin = 16, // Margin inside block
+                Spacing = ParagraphSpacing
             };
+
+            string originalFontFace = TextFontFace;
+            double originalTextFontSize = TextFontSize;
+            Color originalTextColor = TextColor;
+            
+            TextFontFace = BlockQuoteFontFace;
+            TextFontSize = BlockQuoteFontSize;
+            TextColor = BlockQuoteTextColor;
+            
             foreach (var subBlock in block)
             {
                 if (RenderBlock(subBlock) is View view)
                     quoteContent.Children.Add(view);
             }
 
+            TextFontFace = originalFontFace;
+            TextFontSize = originalTextFontSize;
+            TextColor = originalTextColor;
+
             var box = new Border
             {
                 Margin = new Thickness(0),
                 BackgroundColor = BlockQuoteBorderColor,
                 Stroke = new SolidColorBrush(BlockQuoteBorderColor),
-                StrokeShape = new RoundRectangle() { CornerRadius = new CornerRadius(4, 0, 4, 0) },
+                StrokeShape = new RoundRectangle() { CornerRadius = new CornerRadius(8, 8, 8, 8) },
                 HorizontalOptions = LayoutOptions.Fill,
                 VerticalOptions = LayoutOptions.Fill
             };
@@ -845,7 +1096,7 @@ public sealed class MarkdownView : ContentView
                 ColumnSpacing = 0,
                 ColumnDefinitions =
                 {
-                    new ColumnDefinition { Width = 5 },
+                    new ColumnDefinition { Width = 0 },
                     new ColumnDefinition { Width = GridLength.Star }
                 }
             };
@@ -860,9 +1111,10 @@ public sealed class MarkdownView : ContentView
 
             var blockquote = new Border
             {
+                Margin = new Thickness(0, 0),
                 Padding = new Thickness(0),
                 Stroke = new SolidColorBrush(BlockQuoteBorderColor),
-                StrokeShape = new RoundRectangle().WithCornerRadius(4),
+                StrokeShape = new RoundRectangle().WithCornerRadius(8),
                 BackgroundColor = BlockQuoteBackgroundColor,
                 Content = blockQuoteGrid
             };
@@ -884,7 +1136,6 @@ public sealed class MarkdownView : ContentView
             {
                 BackgroundColor = CodeBlockBackgroundColor,
                 Stroke = new SolidColorBrush(CodeBlockBorderColor),
-                Padding = 8,
                 StrokeShape = new RoundRectangle().WithCornerRadius(4),
                 Content = new Label
                 {
@@ -892,6 +1143,7 @@ public sealed class MarkdownView : ContentView
                     FontFamily = CodeBlockFontFace,
                     TextColor = CodeBlockTextColor,
                     FontSize = CodeBlockFontSize,
+                    LineHeight = LineHeightMultiplier,
                     LineBreakMode = LineBreakMode.WordWrap,
                 }
             };
@@ -911,7 +1163,6 @@ public sealed class MarkdownView : ContentView
             {
                 BackgroundColor = CodeBlockBackgroundColor,
                 Stroke = new SolidColorBrush(CodeBlockBorderColor),
-                Padding = 8,
                 StrokeShape = new RoundRectangle().WithCornerRadius(4),
                 Content = new Label
                 {
@@ -919,6 +1170,7 @@ public sealed class MarkdownView : ContentView
                     FontFamily = CodeBlockFontFace,
                     TextColor = CodeBlockTextColor,
                     FontSize = CodeBlockFontSize,
+                    LineHeight = LineHeightMultiplier,
                     LineBreakMode = LineBreakMode.WordWrap,
                 }
             };
@@ -928,6 +1180,38 @@ public sealed class MarkdownView : ContentView
             Console.WriteLine($"Error rendering code block: {ex.Message}");
             return new Label { Text = "[Error rendering code block]" };
         }
+    }
+
+    private View RenderFirstSpacer(SpacerBlock spacerBlock)
+    {
+        return RenderSpacer(spacerBlock, true);
+    }
+    
+    private View RenderSpacer(SpacerBlock spacerBlock, bool isFirstBlock = false)
+    {
+        // Remove the configured block spacing above and below this spacer (unless this is the very first block) 
+        // This way, a spacer of 0 will actually result in 0 space between the blocks.
+        double extraHeight = isFirstBlock ? 0 : spacerBlock.Height - 2 * ParagraphSpacing;
+        
+        var grid = new Grid
+        {
+            HeightRequest = 0,
+            Margin = new Thickness(0, extraHeight, 0, 0),
+        };
+        
+        if (ShowSpacersDebugInfo)
+        {
+            grid.Add(new Label
+            {
+                Text = $"{spacerBlock.Height}",
+                FontSize = 8,
+                TextColor = Colors.DarkGrey,
+                HeightRequest = 20,
+                Margin = new Thickness(-15, -extraHeight + 10, 0, 0),
+            });    
+        }
+        
+        return grid;
     }
 
     private View RenderTable(Table table)
@@ -1095,7 +1379,7 @@ public sealed class MarkdownView : ContentView
             var stack = new VerticalStackLayout
             {
                 Padding = new Thickness(nestingLevel * 20, 0, 0, 0),
-                Spacing = 4
+                Spacing = ListSpacing
             };
 
             foreach (ListItemBlock item in listBlock)
@@ -1142,8 +1426,9 @@ public sealed class MarkdownView : ContentView
                                 {
                                     Text = prefix,
                                     FontAttributes = FontAttributes.Bold,
-                                    VerticalOptions = LayoutOptions.Start,
-                                    HorizontalOptions = LayoutOptions.Start
+                                    VerticalOptions = LayoutOptions.Center,
+                                    HorizontalOptions = LayoutOptions.Start,
+                                    LineHeight = LineHeightMultiplier
                                 };
 
                                 if (content is View contentView)
@@ -1175,7 +1460,7 @@ public sealed class MarkdownView : ContentView
         }
     }
 
-    private FormattedString RenderInlines(ContainerInline? inlines)
+    private FormattedString RenderInlines(ContainerInline inlines)
     {
         var formatted = new FormattedString();
 
@@ -1206,12 +1491,11 @@ public sealed class MarkdownView : ContentView
                             TextDecorations = em.DelimiterChar == '~'
                                 ? TextDecorations.Strikethrough
                                 : TextDecorations.None,
-                            FontAttributes = em.DelimiterChar == '*' && em.DelimiterCount == 2
-                                ? FontAttributes.Bold
+                            FontFamily = em.DelimiterChar == '*' && em.DelimiterCount == 2
+                                ? TextFontFaceBold
                                 : em.DelimiterChar == '*' && em.DelimiterCount == 1
-                                    ? FontAttributes.Italic
-                                    : FontAttributes.None,
-                            FontFamily = TextFontFace,
+                                    ? TextFontFaceItalic
+                                    : TextFontFace,
                             FontSize = TextFontSize,
                             TextColor = TextColor,
                             LineHeight = LineHeightMultiplier
@@ -1219,6 +1503,7 @@ public sealed class MarkdownView : ContentView
                         break;
 
                     case LineBreakInline:
+                        // Note: This causes extra newlines when EnableTrackTrivia() is used.
                         formatted.Spans.Add(new Span
                         {
                             Text = "\n",
