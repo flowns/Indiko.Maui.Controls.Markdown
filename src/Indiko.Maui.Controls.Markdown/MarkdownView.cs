@@ -963,7 +963,6 @@ public sealed class MarkdownView : ContentView
                         {
                             Text = literal.Content.Text.Substring(literal.Content.Start, literal.Content.Length),
                             FontSize = GetFontsizeForBlockLevel(block.Level),
-                            FontAttributes = FontAttributes.Bold,
                             TextColor = GetTextColorForBlockLevel(block.Level),
                             FontFamily = TextFontFaceBold,
                             LineHeight = LineHeightMultiplier
@@ -1137,14 +1136,17 @@ public sealed class MarkdownView : ContentView
                 BackgroundColor = CodeBlockBackgroundColor,
                 Stroke = new SolidColorBrush(CodeBlockBorderColor),
                 StrokeShape = new RoundRectangle().WithCornerRadius(4),
-                Content = new Label
+                Content = new Grid  // Workaround for Android. Adding grid to get LineHeight to work in Boarder.
                 {
-                    Text = block.Lines.ToString(),
-                    FontFamily = CodeBlockFontFace,
-                    TextColor = CodeBlockTextColor,
-                    FontSize = CodeBlockFontSize,
-                    LineHeight = LineHeightMultiplier,
-                    LineBreakMode = LineBreakMode.WordWrap,
+                    new Label
+                    {
+                        Text = block.Lines.ToString(),
+                        FontFamily = CodeBlockFontFace,
+                        TextColor = CodeBlockTextColor,
+                        FontSize = CodeBlockFontSize,
+                        LineHeight = LineHeightMultiplier,
+                        LineBreakMode = LineBreakMode.WordWrap,
+                    }
                 }
             };
         }
@@ -1164,14 +1166,17 @@ public sealed class MarkdownView : ContentView
                 BackgroundColor = CodeBlockBackgroundColor,
                 Stroke = new SolidColorBrush(CodeBlockBorderColor),
                 StrokeShape = new RoundRectangle().WithCornerRadius(4),
-                Content = new Label
+                Content = new Grid  // Workaround for Android. Adding grid to get LineHeight to work in Boarder.
                 {
-                    Text = block.Lines.ToString(),
-                    FontFamily = CodeBlockFontFace,
-                    TextColor = CodeBlockTextColor,
-                    FontSize = CodeBlockFontSize,
-                    LineHeight = LineHeightMultiplier,
-                    LineBreakMode = LineBreakMode.WordWrap,
+                    new Label
+                    {
+                        Text = block.Lines.ToString(),
+                        FontFamily = CodeBlockFontFace,
+                        TextColor = CodeBlockTextColor,
+                        FontSize = CodeBlockFontSize,
+                        LineHeight = LineHeightMultiplier,
+                        LineBreakMode = LineBreakMode.WordWrap,
+                    }
                 }
             };
         }
@@ -1269,7 +1274,6 @@ public sealed class MarkdownView : ContentView
                     {
                         FormattedText = RenderInlines((cell.FirstOrDefault() as ParagraphBlock)?.Inline),
                         BackgroundColor = row.IsHeader ? TableHeaderBackgroundColor : TableRowBackgroundColor,
-                        FontAttributes = row.IsHeader ? FontAttributes.Bold : FontAttributes.None,
                         TextColor = row.IsHeader ? TableHeaderTextColor : TableRowTextColor,
                         FontFamily = row.IsHeader ? TableHeaderFontFace : TableRowFontFace,
                         FontSize = row.IsHeader ? TableHeaderFontSize : TableRowFontSize,
