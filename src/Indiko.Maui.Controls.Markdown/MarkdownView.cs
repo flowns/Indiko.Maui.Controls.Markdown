@@ -1657,7 +1657,8 @@ public sealed class MarkdownView : ContentView
                                 image.Encode(SKEncodedImageFormat.Png, 100).SaveTo(imageStream);
                                 imageStream.Position = 0;
                                 imageSource = ImageSource.FromStream(() => imageStream);
-                                if (imageUrl != null) _imageCache[imageUrl] = imageSource;
+                                
+                                // Don't cache svg images. It crashes on Android and doesn't work on iOS either.
 
                                 xmlDocument = null;
                                 xmlReader.Dispose();
