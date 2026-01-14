@@ -1403,14 +1403,31 @@ public sealed class MarkdownView : ContentView
 
                         if (content != null)
                         {
-                            if (isChecklist && content is Label label)
+                            if (isChecklist && content is Label checklistLabel)
                             {
-                                var checkbox = new CheckBox { IsChecked = isChecked, IsEnabled = false };
-                                var layout = new HorizontalStackLayout
+                                var checkbox = new CheckBox { IsChecked = isChecked, IsEnabled = false, VerticalOptions = LayoutOptions.Start };
+                                checklistLabel.VerticalTextAlignment = TextAlignment.Start;
+                                checklistLabel.VerticalOptions = LayoutOptions.Start;
+
+                                var layout = new Grid
                                 {
-                                    Spacing = 8,
-                                    Children = { checkbox, label }
+                                    ColumnDefinitions =
+                                    {
+                                        new ColumnDefinition { Width = GridLength.Auto },
+                                        new ColumnDefinition { Width = GridLength.Star }
+                                    },
+                                    RowDefinitions =
+                                    {
+                                        new RowDefinition { Height = GridLength.Auto }
+                                    },
+                                    ColumnSpacing = 8
                                 };
+
+                                Grid.SetColumn(checkbox, 0);
+                                layout.Children.Add(checkbox);
+                                Grid.SetColumn(checklistLabel, 1);
+                                layout.Children.Add(checklistLabel);
+
                                 stack.Children.Add(layout);
                             }
                             else
@@ -1423,6 +1440,10 @@ public sealed class MarkdownView : ContentView
                                         new ColumnDefinition { Width = GridLength.Auto },
                                         new ColumnDefinition { Width = GridLength.Star }
                                     },
+                                    RowDefinitions =
+                                    {
+                                        new RowDefinition { Height = GridLength.Auto }
+                                    },
                                     ColumnSpacing = 8
                                 };
 
@@ -1430,14 +1451,20 @@ public sealed class MarkdownView : ContentView
                                 {
                                     Text = prefix,
                                     FontAttributes = FontAttributes.Bold,
-                                    VerticalOptions = LayoutOptions.Center,
+                                    VerticalOptions = LayoutOptions.Start,
                                     HorizontalOptions = LayoutOptions.Start,
+                                    VerticalTextAlignment = TextAlignment.Start,
                                     LineHeight = LineHeightMultiplier
                                 };
 
                                 if (content is View contentView)
                                 {
                                     contentView.HorizontalOptions = LayoutOptions.Fill;
+                                    contentView.VerticalOptions = LayoutOptions.Start;
+                                    if (contentView is Label contentLabel)
+                                    {
+                                        contentLabel.VerticalTextAlignment = TextAlignment.Start;
+                                    }
                                 }
 
                                 Grid.SetColumn(prefixLabel, 0);
