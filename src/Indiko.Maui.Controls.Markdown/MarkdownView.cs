@@ -1279,7 +1279,7 @@ public sealed class MarkdownView : ContentView
                         FontSize = row.IsHeader ? TableHeaderFontSize : TableRowFontSize,
                         Padding = 4,
                         HorizontalTextAlignment = horizontalTextAlignment,
-                        LineBreakMode = row.IsHeader ? LineBreakMode.TailTruncation : LineBreakMode.WordWrap,
+                        LineBreakMode = LineBreakMode.WordWrap,
                         HorizontalOptions = LayoutOptions.Fill,
                         VerticalOptions = LayoutOptions.Fill
                     };
