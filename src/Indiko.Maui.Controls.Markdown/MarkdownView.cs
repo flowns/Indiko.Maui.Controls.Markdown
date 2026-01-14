@@ -530,8 +530,8 @@ public sealed class MarkdownView : ContentView
         set => SetValue(SectionSpacingProperty, value);
     }
     
-    public static readonly BindableProperty ListSpacingProperty = BindableProperty.Create(nameof(ListSpacingProperty),
-        typeof(double), typeof(MarkdownView), propertyChanged: OnMarkdownTextChanged, defaultValue: 0d);
+    public static readonly BindableProperty ListSpacingProperty = BindableProperty.Create(nameof(ListSpacing),
+        typeof(double), typeof(MarkdownView), propertyChanged: OnMarkdownTextChanged, defaultValue: 4d);
 
     public double ListSpacing
     {
@@ -1382,7 +1382,7 @@ public sealed class MarkdownView : ContentView
         {
             var stack = new VerticalStackLayout
             {
-                Padding = new Thickness(nestingLevel * 20, 0, 0, 0),
+                Padding = new Thickness(nestingLevel * 12, 0, 0, 0),
                 Spacing = ListSpacing
             };
 
@@ -1413,7 +1413,7 @@ public sealed class MarkdownView : ContentView
                                 {
                                     ColumnDefinitions =
                                     {
-                                        new ColumnDefinition { Width = GridLength.Auto },
+                                        new ColumnDefinition { Width = 24 },
                                         new ColumnDefinition { Width = GridLength.Star }
                                     },
                                     RowDefinitions =
@@ -1437,7 +1437,7 @@ public sealed class MarkdownView : ContentView
                                 {
                                     ColumnDefinitions =
                                     {
-                                        new ColumnDefinition { Width = GridLength.Auto },
+                                        new ColumnDefinition { Width = 24 },
                                         new ColumnDefinition { Width = GridLength.Star }
                                     },
                                     RowDefinitions =
@@ -1452,9 +1452,14 @@ public sealed class MarkdownView : ContentView
                                     Text = prefix,
                                     FontAttributes = FontAttributes.Bold,
                                     VerticalOptions = LayoutOptions.Start,
-                                    HorizontalOptions = LayoutOptions.Start,
+                                    HorizontalOptions = LayoutOptions.Fill,
+                                    HorizontalTextAlignment = TextAlignment.End,
                                     VerticalTextAlignment = TextAlignment.Start,
-                                    LineHeight = LineHeightMultiplier
+                                    TextColor = TextColor,
+                                    FontSize = TextFontSize,
+                                    FontFamily = TextFontFace,
+                                    LineHeight = LineHeightMultiplier,
+                                    Margin = new Thickness(0, 2, 0, 0)
                                 };
 
                                 if (content is View contentView)
