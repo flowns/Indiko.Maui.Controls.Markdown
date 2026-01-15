@@ -778,7 +778,11 @@ public sealed class MarkdownView : ContentView
             return new Label
             {
                 FormattedText = RenderInlines(block.Inline),
-                LineBreakMode = LineBreakMode.WordWrap
+                LineBreakMode = LineBreakMode.WordWrap,
+                LineHeight = LineHeightMultiplier,
+                TextColor = TextColor,
+                FontSize = TextFontSize,
+                FontFamily = TextFontFace
             };
         }
 
@@ -800,7 +804,8 @@ public sealed class MarkdownView : ContentView
                 FontFamily = TextFontFace,
                 FontSize = TextFontSize,
                 TextColor = TextColor,
-                LineBreakMode = LineBreakMode.WordWrap
+                LineBreakMode = LineBreakMode.WordWrap,
+                LineHeight = LineHeightMultiplier
             };
             // Place the label in the current column
             grid.Children.Add(label);
@@ -1390,6 +1395,7 @@ public sealed class MarkdownView : ContentView
             {
                 var isChecklist = item.TryGetAttributes()?.Properties?.FirstOrDefault(p => p.Key == "checked").Value != null;
                 var isChecked = isChecklist && item.GetAttributes().Properties.First(p => p.Key == "checked").Value == "true";
+                bool isFirstBlock = true;
 
                 foreach (var subBlock in item)
                 {
@@ -1432,7 +1438,12 @@ public sealed class MarkdownView : ContentView
                             }
                             else
                             {
-                                var prefix = listBlock.IsOrdered ? $"{item.Order}." : "•";
+                                var prefix = "";
+                                if (isFirstBlock)
+                                {
+                                    prefix = listBlock.IsOrdered ? $"{item.Order}." : "•";
+                                }
+
                                 var rowGrid = new Grid
                                 {
                                     ColumnDefinitions =
@@ -1450,16 +1461,16 @@ public sealed class MarkdownView : ContentView
                                 var prefixLabel = new Label
                                 {
                                     Text = prefix,
-                                    FontAttributes = FontAttributes.Bold,
+                                    FontAttributes = string.IsNullOrEmpty(TextFontFaceBold) ? FontAttributes.Bold : FontAttributes.None,
                                     VerticalOptions = LayoutOptions.Start,
                                     HorizontalOptions = LayoutOptions.Fill,
                                     HorizontalTextAlignment = TextAlignment.End,
                                     VerticalTextAlignment = TextAlignment.Start,
                                     TextColor = TextColor,
                                     FontSize = TextFontSize,
-                                    FontFamily = TextFontFace,
+                                    FontFamily = string.IsNullOrEmpty(TextFontFaceBold) ? TextFontFace : TextFontFaceBold,
                                     LineHeight = LineHeightMultiplier,
-                                    Margin = new Thickness(0, 2, 0, 0)
+                                    Margin = new Thickness(0, 1, 0, 0)
                                 };
 
                                 if (content is View contentView)
@@ -1483,6 +1494,7 @@ public sealed class MarkdownView : ContentView
                                 stack.Children.Add(rowGrid);
                             }
                         }
+                        isFirstBlock = false;
                     }
                 }
             }
