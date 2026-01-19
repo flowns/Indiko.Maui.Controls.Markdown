@@ -1448,14 +1448,14 @@ public sealed class MarkdownView : ContentView
                                 {
                                     ColumnDefinitions =
                                     {
-                                        new ColumnDefinition { Width = 24 },
+                                        new ColumnDefinition { Width = 20 },
                                         new ColumnDefinition { Width = GridLength.Star }
                                     },
                                     RowDefinitions =
                                     {
                                         new RowDefinition { Height = GridLength.Auto }
                                     },
-                                    ColumnSpacing = 8
+                                    ColumnSpacing = 4
                                 };
 
                                 var prefixLabel = new Label
@@ -1464,13 +1464,12 @@ public sealed class MarkdownView : ContentView
                                     FontAttributes = string.IsNullOrEmpty(TextFontFaceBold) ? FontAttributes.Bold : FontAttributes.None,
                                     VerticalOptions = LayoutOptions.Start,
                                     HorizontalOptions = LayoutOptions.Fill,
-                                    HorizontalTextAlignment = TextAlignment.End,
+                                    HorizontalTextAlignment = TextAlignment.Start,
                                     VerticalTextAlignment = TextAlignment.Start,
                                     TextColor = TextColor,
                                     FontSize = TextFontSize,
                                     FontFamily = string.IsNullOrEmpty(TextFontFaceBold) ? TextFontFace : TextFontFaceBold,
-                                    LineHeight = LineHeightMultiplier,
-                                    Margin = new Thickness(0, 1, 0, 0)
+                                    LineHeight = LineHeightMultiplier
                                 };
 
                                 if (content is View contentView)
