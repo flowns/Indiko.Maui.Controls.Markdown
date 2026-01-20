@@ -530,8 +530,8 @@ public sealed class MarkdownView : ContentView
         set => SetValue(SectionSpacingProperty, value);
     }
     
-    public static readonly BindableProperty ListSpacingProperty = BindableProperty.Create(nameof(ListSpacingProperty),
-        typeof(double), typeof(MarkdownView), propertyChanged: OnMarkdownTextChanged, defaultValue: 0d);
+    public static readonly BindableProperty ListSpacingProperty = BindableProperty.Create(nameof(ListSpacing),
+        typeof(double), typeof(MarkdownView), propertyChanged: OnMarkdownTextChanged, defaultValue: 4d);
 
     public double ListSpacing
     {
@@ -778,7 +778,11 @@ public sealed class MarkdownView : ContentView
             return new Label
             {
                 FormattedText = RenderInlines(block.Inline),
-                LineBreakMode = LineBreakMode.WordWrap
+                LineBreakMode = LineBreakMode.WordWrap,
+                LineHeight = LineHeightMultiplier,
+                TextColor = TextColor,
+                FontSize = TextFontSize,
+                FontFamily = TextFontFace
             };
         }
 
@@ -800,7 +804,8 @@ public sealed class MarkdownView : ContentView
                 FontFamily = TextFontFace,
                 FontSize = TextFontSize,
                 TextColor = TextColor,
-                LineBreakMode = LineBreakMode.WordWrap
+                LineBreakMode = LineBreakMode.WordWrap,
+                LineHeight = LineHeightMultiplier
             };
             // Place the label in the current column
             grid.Children.Add(label);
@@ -1279,7 +1284,7 @@ public sealed class MarkdownView : ContentView
                         FontSize = row.IsHeader ? TableHeaderFontSize : TableRowFontSize,
                         Padding = 4,
                         HorizontalTextAlignment = horizontalTextAlignment,
-                        LineBreakMode = row.IsHeader ? LineBreakMode.TailTruncation : LineBreakMode.WordWrap,
+                        LineBreakMode = LineBreakMode.WordWrap,
                         HorizontalOptions = LayoutOptions.Fill,
                         VerticalOptions = LayoutOptions.Fill
                     };
@@ -1382,7 +1387,7 @@ public sealed class MarkdownView : ContentView
         {
             var stack = new VerticalStackLayout
             {
-                Padding = new Thickness(nestingLevel * 20, 0, 0, 0),
+                Padding = new Thickness(nestingLevel * 12, 0, 0, 0),
                 Spacing = ListSpacing
             };
 
@@ -1390,6 +1395,7 @@ public sealed class MarkdownView : ContentView
             {
                 var isChecklist = item.TryGetAttributes()?.Properties?.FirstOrDefault(p => p.Key == "checked").Value != null;
                 var isChecked = isChecklist && item.GetAttributes().Properties.First(p => p.Key == "checked").Value == "true";
+                bool isFirstBlock = true;
 
                 foreach (var subBlock in item)
                 {
@@ -1403,41 +1409,77 @@ public sealed class MarkdownView : ContentView
 
                         if (content != null)
                         {
-                            if (isChecklist && content is Label label)
+                            if (isChecklist && content is Label checklistLabel)
                             {
-                                var checkbox = new CheckBox { IsChecked = isChecked, IsEnabled = false };
-                                var layout = new HorizontalStackLayout
+                                var checkbox = new CheckBox { IsChecked = isChecked, IsEnabled = false, VerticalOptions = LayoutOptions.Start };
+                                checklistLabel.VerticalTextAlignment = TextAlignment.Start;
+                                checklistLabel.VerticalOptions = LayoutOptions.Start;
+
+                                var layout = new Grid
                                 {
-                                    Spacing = 8,
-                                    Children = { checkbox, label }
+                                    ColumnDefinitions =
+                                    {
+                                        new ColumnDefinition { Width = 24 },
+                                        new ColumnDefinition { Width = GridLength.Star }
+                                    },
+                                    RowDefinitions =
+                                    {
+                                        new RowDefinition { Height = GridLength.Auto }
+                                    },
+                                    ColumnSpacing = 8
                                 };
+
+                                Grid.SetColumn(checkbox, 0);
+                                layout.Children.Add(checkbox);
+                                Grid.SetColumn(checklistLabel, 1);
+                                layout.Children.Add(checklistLabel);
+
                                 stack.Children.Add(layout);
                             }
                             else
                             {
-                                var prefix = listBlock.IsOrdered ? $"{item.Order}." : "•";
+                                var prefix = "";
+                                if (isFirstBlock)
+                                {
+                                    prefix = listBlock.IsOrdered ? $"{item.Order}." : "•";
+                                }
+
                                 var rowGrid = new Grid
                                 {
                                     ColumnDefinitions =
                                     {
-                                        new ColumnDefinition { Width = GridLength.Auto },
+                                        new ColumnDefinition { Width = 20 },
                                         new ColumnDefinition { Width = GridLength.Star }
                                     },
-                                    ColumnSpacing = 8
+                                    RowDefinitions =
+                                    {
+                                        new RowDefinition { Height = GridLength.Auto }
+                                    },
+                                    ColumnSpacing = 4
                                 };
 
                                 var prefixLabel = new Label
                                 {
                                     Text = prefix,
-                                    FontAttributes = FontAttributes.Bold,
-                                    VerticalOptions = LayoutOptions.Center,
-                                    HorizontalOptions = LayoutOptions.Start,
+                                    FontAttributes = string.IsNullOrEmpty(TextFontFaceBold) ? FontAttributes.Bold : FontAttributes.None,
+                                    VerticalOptions = LayoutOptions.Start,
+                                    HorizontalOptions = LayoutOptions.Fill,
+                                    HorizontalTextAlignment = TextAlignment.Start,
+                                    VerticalTextAlignment = TextAlignment.Start,
+                                    TextColor = TextColor,
+                                    FontSize = TextFontSize,
+                                    FontFamily = string.IsNullOrEmpty(TextFontFaceBold) ? TextFontFace : TextFontFaceBold,
                                     LineHeight = LineHeightMultiplier
                                 };
 
                                 if (content is View contentView)
                                 {
                                     contentView.HorizontalOptions = LayoutOptions.Fill;
+                                    contentView.VerticalOptions = LayoutOptions.Start;
+                                    if (contentView is Label contentLabel)
+                                    {
+                                        contentLabel.VerticalTextAlignment = TextAlignment.Start;
+                                    }
                                 }
 
                                 Grid.SetColumn(prefixLabel, 0);
@@ -1451,6 +1493,7 @@ public sealed class MarkdownView : ContentView
                                 stack.Children.Add(rowGrid);
                             }
                         }
+                        isFirstBlock = false;
                     }
                 }
             }
