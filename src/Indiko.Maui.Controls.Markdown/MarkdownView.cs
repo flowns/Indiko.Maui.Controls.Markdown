@@ -622,18 +622,12 @@ public sealed class MarkdownView : ContentView
                 Padding = 0,
                 Spacing = ParagraphSpacing
             };
-
-            if (document.First() is SpacerBlock spacerBlock)
-            {
-                layout.Children.Add(RenderFirstSpacer(spacerBlock)); // Special case if the first block is a spacer.
-                document.Remove(spacerBlock);
-            }
-
+            
             foreach (var block in document)
             {
                 try
                 {
-                    if (RenderBlock(block) is View view)
+                    if (RenderBlock(block, document) is View view)
                         layout.Children.Add(view);
                 }
                 catch (Exception ex)
@@ -682,16 +676,21 @@ public sealed class MarkdownView : ContentView
             Block previousBlock = i > 0 ? document[i - 1] : null;
             Block nextBlock = i < document.Count - 1 ? document[i + 1] : null;
             int blocksInserted = 0;
-
+            
             int? spacingBefore = GetSpacingBefore(currentBlock);
-            if (spacingBefore != null && previousBlock is not SpacerBlock)
+            if (spacingBefore != null && 
+                previousBlock != null &&
+                previousBlock is not SpacerBlock)
             {
                 document.Insert(i, new SpacerBlock{ Height = (int)spacingBefore });
                 blocksInserted++;
             }
             
             int? spacingAfter = GetSpacingAfter(currentBlock);
-            if (spacingAfter != null && nextBlock != null && nextBlock is not SpacerBlock)
+            if (spacingAfter != null && 
+                nextBlock != null && 
+                nextBlock is not SpacerBlock && 
+                nextBlock is not LinkReferenceDefinitionGroup)
             {
                 document.Insert(i + blocksInserted + 1, new SpacerBlock{ Height = (int)spacingAfter });
                 blocksInserted++;
@@ -738,7 +737,7 @@ public sealed class MarkdownView : ContentView
         };
     }
 
-    private View RenderBlock(Block block)
+    private View RenderBlock(Block block, MarkdownDocument document)
     {
         try
         {
@@ -746,14 +745,14 @@ public sealed class MarkdownView : ContentView
             {
                 ParagraphBlock p => RenderParagraph(p),
                 HeadingBlock h => RenderHeading(h),
-                ListBlock l => RenderList(l),
-                QuoteBlock q => RenderQuote(q),
+                ListBlock l => RenderList(l, document),
+                QuoteBlock q => RenderQuote(q, document),
                 ThematicBreakBlock => new BoxView { HeightRequest = 1, Color = LineColor, Margin = new Thickness(0, 0, 0, 0)},
                 Table table => RenderTable(table),
-                CustomContainer cc => RenderCustomContainer(cc),
+                CustomContainer cc => RenderCustomContainer(cc, document),
                 MathBlock m => RenderFormula(m),
                 CodeBlock c => c is FencedCodeBlock fenced ? RenderCode(fenced) : RenderCodeBlock(c),
-                SpacerBlock s => RenderSpacer(s),
+                SpacerBlock s => RenderSpacer(s, document),
                 BlankLineBlock => null,
                 _ => null
             };
@@ -892,7 +891,8 @@ public sealed class MarkdownView : ContentView
                                 {
                                     Debug.WriteLine("WARNING: Markdown view has horizontal margin and a 'fullwidth' image. This may not look correct on Android. Use padding on the markdown view instead.");
                                 }
-                                img.Margin = new Thickness(- Margin.Left - Padding.Left, 0, - Margin.Right - Padding.Right, 0);
+                                img.Margin = new Thickness(- Margin.Left - Padding.Left, 
+                                    -Margin.Top - Padding.Top, - Margin.Right - Padding.Right, 0);
                             }
                             else
                             {
@@ -1056,7 +1056,7 @@ public sealed class MarkdownView : ContentView
         }
     }
 
-    private View RenderQuote(QuoteBlock block)
+    private View RenderQuote(QuoteBlock block, MarkdownDocument document)
     {
         try
         {
@@ -1076,7 +1076,7 @@ public sealed class MarkdownView : ContentView
             
             foreach (var subBlock in block)
             {
-                if (RenderBlock(subBlock) is View view)
+                if (RenderBlock(subBlock, document) is View view)
                     quoteContent.Children.Add(view);
             }
 
@@ -1191,22 +1191,28 @@ public sealed class MarkdownView : ContentView
             return new Label { Text = "[Error rendering code block]" };
         }
     }
-
-    private View RenderFirstSpacer(SpacerBlock spacerBlock)
-    {
-        return RenderSpacer(spacerBlock, true);
-    }
     
-    private View RenderSpacer(SpacerBlock spacerBlock, bool isFirstBlock = false)
+    private View RenderSpacer(SpacerBlock spacerBlock, MarkdownDocument document)
     {
-        // Remove the configured block spacing above and below this spacer (unless this is the very first block) 
+        int blockIndex = document.IndexOf(spacerBlock);
+        bool isFirstBlock = blockIndex == 0;
+        
+        // Special case: Sometimes the parser inserts an invisible LinkReferenceDefinitionGroup as the last block
+        bool isLastBlock = document[^1] is LinkReferenceDefinitionGroup 
+            ? blockIndex == document.Count - 2 
+            : blockIndex == document.Count - 1;
+        
+        // Remove the configured block spacing above and below this spacer.
+        // (Unless this is the first or last block, in which case we only remove one spacing - above or below.) 
         // This way, a spacer of 0 will actually result in 0 space between the blocks.
-        double extraHeight = isFirstBlock ? 0 : spacerBlock.Height - 2 * ParagraphSpacing;
+        double actualHeight = isFirstBlock || isLastBlock
+            ? spacerBlock.Height - ParagraphSpacing
+            : spacerBlock.Height - 2 * ParagraphSpacing; 
         
         var grid = new Grid
         {
             HeightRequest = 0,
-            Margin = new Thickness(0, extraHeight, 0, 0),
+            Margin = new Thickness(0, actualHeight, 0, 0),
         };
         
         if (ShowSpacersDebugInfo)
@@ -1217,7 +1223,7 @@ public sealed class MarkdownView : ContentView
                 FontSize = 8,
                 TextColor = Colors.DarkGrey,
                 HeightRequest = 20,
-                Margin = new Thickness(-15, -extraHeight + 10, 0, 0),
+                Margin = new Thickness(-15, -actualHeight + 10, 0, 0),
             });    
         }
         
@@ -1345,7 +1351,7 @@ public sealed class MarkdownView : ContentView
         }
     }
 
-    private View RenderCustomContainer(CustomContainer container)
+    private View RenderCustomContainer(CustomContainer container, MarkdownDocument document)
     {
         try
         {
@@ -1362,7 +1368,7 @@ public sealed class MarkdownView : ContentView
             var inner = new VerticalStackLayout();
             foreach (var child in container)
             {
-                if (RenderBlock(child) is View view)
+                if (RenderBlock(child, document) is View view)
                     inner.Children.Add(view);
             }
 
@@ -1381,7 +1387,7 @@ public sealed class MarkdownView : ContentView
         }
     }
 
-    private View RenderList(ListBlock listBlock, int nestingLevel = 0)
+    private View RenderList(ListBlock listBlock, MarkdownDocument document, int nestingLevel = 0)
     {
         try
         {
@@ -1401,11 +1407,11 @@ public sealed class MarkdownView : ContentView
                 {
                     if (subBlock is ListBlock nestedList)
                     {
-                        stack.Children.Add(RenderList(nestedList, nestingLevel + 1));
+                        stack.Children.Add(RenderList(nestedList, document, nestingLevel + 1));
                     }
                     else
                     {
-                        var content = RenderBlock(subBlock);
+                        var content = RenderBlock(subBlock, document);
 
                         if (content != null)
                         {
