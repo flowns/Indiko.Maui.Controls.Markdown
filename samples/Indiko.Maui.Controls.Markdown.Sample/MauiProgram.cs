@@ -10,9 +10,9 @@ public static class MauiProgram
             .UseMarkdownView()
             .ConfigureFonts(fonts =>
         {
-            fonts.AddFont("neueSerie57®-Regular.otf", "OpenSansRegular");
-            fonts.AddFont("neueSerie57®-Book.otf", "OpenSansSemiBold");
-            fonts.AddFont("neueSerie57®-RegularItalic.otf", "OpenSansItalic");
+            fonts.AddFont("neueSerie57®-Regular.otf", "Regular");
+            fonts.AddFont("neueSerie57®-Book.otf", "SemiBold");
+            fonts.AddFont("neueSerie57®-RegularItalic.otf", "Italic");
         });
 
         builder.Services.AddSingleton<MainPage>();
