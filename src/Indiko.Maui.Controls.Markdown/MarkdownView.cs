@@ -23,6 +23,9 @@ public sealed class MarkdownView : ContentView
 {
     private static readonly Regex EmailRegex = new Regex(@"\b[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Z|a-z]{2,}\b", RegexOptions.Compiled);
 
+    // This is a workaround for the fact that the line height of the code block is narrower on Android for unknown reasons.
+    private static readonly double CodeBlockExtraLineHeight = DeviceInfo.Platform == DevicePlatform.Android ? 0.2 : 0;
+
     public static readonly BindableProperty MarkdownTextProperty =
         BindableProperty.Create(nameof(MarkdownText), typeof(string), typeof(MarkdownView), propertyChanged: OnMarkdownTextContentChanged);
 
@@ -1260,7 +1263,7 @@ public sealed class MarkdownView : ContentView
                         TextColor = CodeBlockTextColor,
                         FontSize = CodeBlockFontSize,
                         CharacterSpacing = CodeBlockCharacterSpacing,
-                        LineHeight = LineHeightMultiplier,
+                        LineHeight = LineHeightMultiplier + CodeBlockExtraLineHeight,
                         LineBreakMode = LineBreakMode.WordWrap,
                     }
                 }
@@ -1291,7 +1294,7 @@ public sealed class MarkdownView : ContentView
                         TextColor = CodeBlockTextColor,
                         FontSize = CodeBlockFontSize,
                         CharacterSpacing = CodeBlockCharacterSpacing,
-                        LineHeight = LineHeightMultiplier,
+                        LineHeight = LineHeightMultiplier + CodeBlockExtraLineHeight,
                         LineBreakMode = LineBreakMode.WordWrap,
                     }
                 }
