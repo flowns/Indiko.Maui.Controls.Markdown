@@ -11,7 +11,7 @@
             
             <!-- Flow app styles -->
             <Color x:Key="White">#FFFFFF</Color>
-            <Color x:Key="Dark">#232323</Color>
+            <Color x:Key="TextPrimary">#1F1F1E</Color>
             <Color x:Key="Sage10">#F5F6F4</Color>
             <Color x:Key="WarmGrey60">#757370</Color>
             <Color x:Key="WarmGrey20">#EFECE7</Color>
