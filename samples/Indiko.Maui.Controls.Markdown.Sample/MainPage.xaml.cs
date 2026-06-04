@@ -5,6 +5,8 @@ namespace Indiko.Maui.Controls.Markdown.Sample;
 public partial class MainPage : ContentPage
 {
 	MainPageViewModel mainPageViewModel;
+	
+	public static readonly double NormalLineHeight = DeviceInfo.Platform == DevicePlatform.Android ? 1.3 : 1.1;
 
 	public MainPage()
 	{

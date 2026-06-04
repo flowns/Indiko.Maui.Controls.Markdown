@@ -23,6 +23,9 @@ public sealed class MarkdownView : ContentView
 {
     private static readonly Regex EmailRegex = new Regex(@"\b[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Z|a-z]{2,}\b", RegexOptions.Compiled);
 
+    // This is a workaround for the fact that the line height of the code block is narrower on Android for unknown reasons.
+    private static readonly double CodeBlockExtraLineHeight = DeviceInfo.Platform == DevicePlatform.Android ? 0.2 : 0;
+
     public static readonly BindableProperty MarkdownTextProperty =
         BindableProperty.Create(nameof(MarkdownText), typeof(string), typeof(MarkdownView), propertyChanged: OnMarkdownTextContentChanged);
 
@@ -78,6 +81,15 @@ public sealed class MarkdownView : ContentView
         set => SetValue(H1FontSizeProperty, value);
     }
     
+    public static readonly BindableProperty H1CharacterSpacingProperty =
+        BindableProperty.Create(nameof(H1CharacterSpacing), typeof(double), typeof(MarkdownView), defaultValue: 0d, propertyChanged: OnMarkdownTextChanged);
+    
+    public double H1CharacterSpacing
+    {
+        get => (double)GetValue(H1CharacterSpacingProperty);
+        set => SetValue(H1CharacterSpacingProperty, value);
+    }
+    
     public static readonly BindableProperty H1SpacingBeforeProperty =
         BindableProperty.Create(nameof(H1SpacingBefore), typeof(int), typeof(MarkdownView), 16, propertyChanged: OnMarkdownTextChanged);
 
@@ -113,6 +125,15 @@ public sealed class MarkdownView : ContentView
     {
         get => (double)GetValue(H2FontSizeProperty);
         set => SetValue(H2FontSizeProperty, value);
+    }
+    
+    public static readonly BindableProperty H2CharacterSpacingProperty =
+        BindableProperty.Create(nameof(H2CharacterSpacing), typeof(double), typeof(MarkdownView), defaultValue: 0d, propertyChanged: OnMarkdownTextChanged);
+    
+    public double H2CharacterSpacing
+    {
+        get => (double)GetValue(H2CharacterSpacingProperty);
+        set => SetValue(H2CharacterSpacingProperty, value);
     }
     
     public static readonly BindableProperty H2SpacingBeforeProperty =
@@ -153,6 +174,15 @@ public sealed class MarkdownView : ContentView
         set => SetValue(H3FontSizeProperty, value);
     }
     
+    public static readonly BindableProperty H3CharacterSpacingProperty =
+        BindableProperty.Create(nameof(H3CharacterSpacing), typeof(double), typeof(MarkdownView), defaultValue: 0d, propertyChanged: OnMarkdownTextChanged);
+    
+    public double H3CharacterSpacing
+    {
+        get => (double)GetValue(H3CharacterSpacingProperty);
+        set => SetValue(H3CharacterSpacingProperty, value);
+    }
+    
     public static readonly BindableProperty H3SpacingBeforeProperty =
         BindableProperty.Create(nameof(H3SpacingBefore), typeof(int), typeof(MarkdownView), 32, propertyChanged: OnMarkdownTextChanged);
 
@@ -191,6 +221,15 @@ public sealed class MarkdownView : ContentView
         set => SetValue(H4FontSizeProperty, value);
     }
     
+    public static readonly BindableProperty H4CharacterSpacingProperty =
+        BindableProperty.Create(nameof(H4CharacterSpacing), typeof(double), typeof(MarkdownView), defaultValue: 0d, propertyChanged: OnMarkdownTextChanged);
+    
+    public double H4CharacterSpacing
+    {
+        get => (double)GetValue(H4CharacterSpacingProperty);
+        set => SetValue(H4CharacterSpacingProperty, value);
+    }
+    
     public static readonly BindableProperty H4SpacingBeforeProperty =
         BindableProperty.Create(nameof(H4SpacingBefore), typeof(int), typeof(MarkdownView), 32, propertyChanged: OnMarkdownTextChanged);
 
@@ -219,6 +258,15 @@ public sealed class MarkdownView : ContentView
     {
         get => (double)GetValue(TableHeaderFontSizeProperty);
         set => SetValue(TableHeaderFontSizeProperty, value);
+    }
+    
+    public static readonly BindableProperty TableHeaderCharacterSpacingProperty =
+        BindableProperty.Create(nameof(TableHeaderCharacterSpacing), typeof(double), typeof(MarkdownView), defaultValue: 0d, propertyChanged: OnMarkdownTextChanged);
+    
+    public double TableHeaderCharacterSpacing
+    {
+        get => (double)GetValue(TableHeaderCharacterSpacingProperty);
+        set => SetValue(TableHeaderCharacterSpacingProperty, value);
     }
 
     public static readonly BindableProperty TableHeaderTextColorProperty =
@@ -286,6 +334,15 @@ public sealed class MarkdownView : ContentView
         get => (double)GetValue(TableRowFontSizeProperty);
         set => SetValue(TableRowFontSizeProperty, value);
     }
+    
+    public static readonly BindableProperty TableRowCharacterSpacingProperty =
+        BindableProperty.Create(nameof(TableRowCharacterSpacing), typeof(double), typeof(MarkdownView), defaultValue: 0d, propertyChanged: OnMarkdownTextChanged);
+    
+    public double TableRowCharacterSpacing
+    {
+        get => (double)GetValue(TableRowCharacterSpacingProperty);
+        set => SetValue(TableRowCharacterSpacingProperty, value);
+    }
 
     /* ****** Text Styling ******** */
 
@@ -306,6 +363,15 @@ public sealed class MarkdownView : ContentView
     {
         get => (double)GetValue(TextFontSizeProperty);
         set => SetValue(TextFontSizeProperty, value);
+    }
+    
+    public static readonly BindableProperty TextCharacterSpacingProperty =
+        BindableProperty.Create(nameof(TextCharacterSpacing), typeof(double), typeof(MarkdownView), defaultValue: 0d, propertyChanged: OnMarkdownTextChanged);
+    
+    public double TextCharacterSpacing
+    {
+        get => (double)GetValue(TextCharacterSpacingProperty);
+        set => SetValue(TextCharacterSpacingProperty, value);
     }
 
     public static readonly BindableProperty TextFontFaceProperty =
@@ -383,6 +449,15 @@ public sealed class MarkdownView : ContentView
         get => (double)GetValue(CodeBlockFontSizeProperty);
         set => SetValue(CodeBlockFontSizeProperty, value);
     }
+    
+    public static readonly BindableProperty CodeBlockCharacterSpacingProperty =
+        BindableProperty.Create(nameof(CodeBlockCharacterSpacing), typeof(double), typeof(MarkdownView), defaultValue: 0d, propertyChanged: OnMarkdownTextChanged);
+    
+    public double CodeBlockCharacterSpacing
+    {
+        get => (double)GetValue(CodeBlockCharacterSpacingProperty);
+        set => SetValue(CodeBlockCharacterSpacingProperty, value);
+    }
 
     public static readonly BindableProperty CodeBlockFontFaceProperty =
       BindableProperty.Create(nameof(CodeBlockFontFace), typeof(string), typeof(MarkdownView), propertyChanged: OnMarkdownTextChanged);
@@ -439,6 +514,15 @@ public sealed class MarkdownView : ContentView
     {
         get => (double)GetValue(BlockQuoteFontSizeProperty);
         set => SetValue(BlockQuoteFontSizeProperty, value);
+    }
+    
+    public static readonly BindableProperty BlockQuoteCharacterSpacingProperty =
+        BindableProperty.Create(nameof(BlockQuoteCharacterSpacing), typeof(double), typeof(MarkdownView), defaultValue: 0d, propertyChanged: OnMarkdownTextChanged);
+    
+    public double BlockQuoteCharacterSpacing
+    {
+        get => (double)GetValue(BlockQuoteCharacterSpacingProperty);
+        set => SetValue(BlockQuoteCharacterSpacingProperty, value);
     }
 
     /* ****** Hyplerlink Styling ******** */
@@ -782,6 +866,7 @@ public sealed class MarkdownView : ContentView
                 LineHeight = LineHeightMultiplier,
                 TextColor = TextColor,
                 FontSize = TextFontSize,
+                CharacterSpacing = TextCharacterSpacing,
                 FontFamily = TextFontFace
             };
         }
@@ -803,6 +888,7 @@ public sealed class MarkdownView : ContentView
                 Text = textBuffer.ToString(),
                 FontFamily = TextFontFace,
                 FontSize = TextFontSize,
+                CharacterSpacing = TextCharacterSpacing,
                 TextColor = TextColor,
                 LineBreakMode = LineBreakMode.WordWrap,
                 LineHeight = LineHeightMultiplier
@@ -968,6 +1054,7 @@ public sealed class MarkdownView : ContentView
                         {
                             Text = literal.Content.Text.Substring(literal.Content.Start, literal.Content.Length),
                             FontSize = GetFontsizeForBlockLevel(block.Level),
+                            CharacterSpacing = GetCharacterSpacingForBlockLevel(block.Level),
                             TextColor = GetTextColorForBlockLevel(block.Level),
                             FontFamily = TextFontFaceBold,
                             LineHeight = LineHeightMultiplier
@@ -980,6 +1067,7 @@ public sealed class MarkdownView : ContentView
                         {
                             Text = text,
                             FontSize = GetFontsizeForBlockLevel(block.Level),
+                            CharacterSpacing = GetCharacterSpacingForBlockLevel(block.Level),
                             TextColor = GetTextColorForBlockLevel(block.Level),
                             FontFamily = em.DelimiterCount == 2 ? TextFontFaceBold : TextFontFaceItalic,
                             LineHeight = LineHeightMultiplier
@@ -1055,6 +1143,28 @@ public sealed class MarkdownView : ContentView
             return 12d;
         }
     }
+    
+    private double GetCharacterSpacingForBlockLevel(int blockLevel)
+    {
+        try
+        {
+            if (blockLevel == 1)
+                return H1CharacterSpacing;
+            else if (blockLevel == 2)
+                return H2CharacterSpacing;
+            else if (blockLevel == 3)
+                return H3CharacterSpacing;
+            else if (blockLevel == 4)
+                return H4CharacterSpacing;
+            else
+                return H4CharacterSpacing;
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"Error getting character spacing for block level: {ex.Message}");
+            return 0d;
+        }
+    }
 
     private View RenderQuote(QuoteBlock block)
     {
@@ -1068,10 +1178,12 @@ public sealed class MarkdownView : ContentView
 
             string originalFontFace = TextFontFace;
             double originalTextFontSize = TextFontSize;
+            double originalTextCharacterSpacing = TextCharacterSpacing;
             Color originalTextColor = TextColor;
             
             TextFontFace = BlockQuoteFontFace;
             TextFontSize = BlockQuoteFontSize;
+            TextCharacterSpacing = BlockQuoteCharacterSpacing; 
             TextColor = BlockQuoteTextColor;
             
             foreach (var subBlock in block)
@@ -1082,6 +1194,7 @@ public sealed class MarkdownView : ContentView
 
             TextFontFace = originalFontFace;
             TextFontSize = originalTextFontSize;
+            TextCharacterSpacing = originalTextCharacterSpacing;
             TextColor = originalTextColor;
 
             var box = new Border
@@ -1149,7 +1262,8 @@ public sealed class MarkdownView : ContentView
                         FontFamily = CodeBlockFontFace,
                         TextColor = CodeBlockTextColor,
                         FontSize = CodeBlockFontSize,
-                        LineHeight = LineHeightMultiplier,
+                        CharacterSpacing = CodeBlockCharacterSpacing,
+                        LineHeight = LineHeightMultiplier + CodeBlockExtraLineHeight,
                         LineBreakMode = LineBreakMode.WordWrap,
                     }
                 }
@@ -1179,7 +1293,8 @@ public sealed class MarkdownView : ContentView
                         FontFamily = CodeBlockFontFace,
                         TextColor = CodeBlockTextColor,
                         FontSize = CodeBlockFontSize,
-                        LineHeight = LineHeightMultiplier,
+                        CharacterSpacing = CodeBlockCharacterSpacing,
+                        LineHeight = LineHeightMultiplier + CodeBlockExtraLineHeight,
                         LineBreakMode = LineBreakMode.WordWrap,
                     }
                 }
@@ -1282,6 +1397,7 @@ public sealed class MarkdownView : ContentView
                         TextColor = row.IsHeader ? TableHeaderTextColor : TableRowTextColor,
                         FontFamily = row.IsHeader ? TableHeaderFontFace : TableRowFontFace,
                         FontSize = row.IsHeader ? TableHeaderFontSize : TableRowFontSize,
+                        CharacterSpacing = row.IsHeader ? TableHeaderCharacterSpacing : TableRowCharacterSpacing,
                         Padding = 4,
                         HorizontalTextAlignment = horizontalTextAlignment,
                         LineBreakMode = LineBreakMode.WordWrap,
@@ -1468,6 +1584,7 @@ public sealed class MarkdownView : ContentView
                                     VerticalTextAlignment = TextAlignment.Start,
                                     TextColor = TextColor,
                                     FontSize = TextFontSize,
+                                    CharacterSpacing = TextCharacterSpacing,
                                     FontFamily = string.IsNullOrEmpty(TextFontFaceBold) ? TextFontFace : TextFontFaceBold,
                                     LineHeight = LineHeightMultiplier
                                 };
@@ -1525,6 +1642,7 @@ public sealed class MarkdownView : ContentView
                             Text = literal.Content.Text.Substring(literal.Content.Start, literal.Content.Length),
                             FontFamily = TextFontFace,
                             FontSize = TextFontSize,
+                            CharacterSpacing = TextCharacterSpacing,
                             TextColor = TextColor,
                             LineHeight = LineHeightMultiplier
                         });
@@ -1544,6 +1662,7 @@ public sealed class MarkdownView : ContentView
                                     ? TextFontFaceItalic
                                     : TextFontFace,
                             FontSize = TextFontSize,
+                            CharacterSpacing = TextCharacterSpacing,
                             TextColor = TextColor,
                             LineHeight = LineHeightMultiplier
                         });
@@ -1556,6 +1675,7 @@ public sealed class MarkdownView : ContentView
                             Text = "\n",
                             FontFamily = TextFontFace,
                             FontSize = TextFontSize,
+                            CharacterSpacing = TextCharacterSpacing,
                             TextColor = TextColor,
                             LineHeight = LineHeightMultiplier
                         });
@@ -1570,6 +1690,7 @@ public sealed class MarkdownView : ContentView
                             TextDecorations = TextDecorations.Underline,
                             FontFamily = TextFontFace,
                             FontSize = TextFontSize,
+                            CharacterSpacing = TextCharacterSpacing,
                             LineHeight = LineHeightMultiplier
                         };
 
@@ -1598,6 +1719,7 @@ public sealed class MarkdownView : ContentView
                             Text = "[Image]",
                             FontFamily = TextFontFace,
                             FontSize = TextFontSize,
+                            CharacterSpacing = TextCharacterSpacing,
                             TextColor = TextColor,
                             LineHeight = LineHeightMultiplier
                         });
@@ -1610,6 +1732,7 @@ public sealed class MarkdownView : ContentView
                             TextColor = Colors.DarkOliveGreen,
                             FontFamily = TextFontFace,
                             FontSize = TextFontSize,
+                            CharacterSpacing = TextCharacterSpacing,
                             LineHeight = LineHeightMultiplier
                         });
                         break;
